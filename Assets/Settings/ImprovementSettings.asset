@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8d8de8f3ce94d64da4c1e53361176a8, type: 3}
+  m_Name: ImprovementSettings
+  m_EditorClassIdentifier: 
+  startImprovementCount: 5
+  maxImprovementCount: 15
+  improvements:
+  - type: 0
+    time: 30
+    capacity: 2
+    prefab: {fileID: -7826949002483995996, guid: a33164772da62e0449d44804b9b692a3, type: 3}
+  - type: 1
+    time: 30
+    capacity: 20
+    prefab: {fileID: 6891272094449534149, guid: c1f0ae5807a1a7e45886a09cbc395dc5, type: 3}
