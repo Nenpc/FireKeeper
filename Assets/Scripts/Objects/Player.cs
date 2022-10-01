@@ -3,11 +3,18 @@ using Managers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 
 namespace GameView
 {
+	public enum PlayerAnimation
+	{
+		Run,
+		Jump,
+		Sprint,
+		Gathering
+	}
+
 	[RequireComponent(typeof(CharacterController), typeof(Transform))]
 	public class Player : MonoBehaviour, IInitialize, IDisposable
 	{
@@ -42,6 +49,7 @@ namespace GameView
 			InputManager.Instance.GoRight += GoRight;
 			InputManager.Instance.GoLeft += GoLeft;
 			InputManager.Instance.GoBack += GoBack;
+			InputManager.Instance.Sprint += Sprint;
 			InputManager.Instance.Interaction += Interaction;
 			InputManager.Instance.Drop += Drop;
 
@@ -54,10 +62,10 @@ namespace GameView
 
 		#region InputMethodValue
 		private bool goFront;
-		public bool goRight;
-		public bool goLeft;
-		public bool goBack;
-		public bool sprint;
+		private bool goRight;
+		private bool goLeft;
+		private bool goBack;
+		private bool sprint;
 		#endregion
 
 		#region InputMethodHandler
@@ -77,6 +85,7 @@ namespace GameView
 			InputManager.Instance.GoRight -= GoRight;
 			InputManager.Instance.GoLeft -= GoLeft;
 			InputManager.Instance.GoBack -= GoBack;
+			InputManager.Instance.Sprint -= Sprint;
 			InputManager.Instance.Interaction -= Interaction;
 			InputManager.Instance.Drop -= Drop;
 		}
@@ -93,8 +102,7 @@ namespace GameView
 
 		private bool OnGround()
 		{
-			RaycastHit hit;
-			if (Physics.Raycast(transform.position, Vector3.down, out hit, hitDistance, hitLayer))
+			if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hitDistance, hitLayer))
 			{
 				return true;
 			}
@@ -117,32 +125,34 @@ namespace GameView
 			if (goBack) direction += transform.forward * (-1);
 
 			direction = direction.normalized;
+
 			if (sprint && stamina > 0 && direction != Vector3.zero)
 			{
 				direction *= playerSetting.runSpeed;
-				animator.SetBool("Sprint", true);
+				animator.SetBool(PlayerAnimation.Sprint.ToString(), true);
 				stamina = Mathf.Clamp(stamina - Time.deltaTime, 0, playerSetting.maxStamina); 
 			}
 			else
 			{
 				direction *= playerSetting.walkSpeed;
-				animator.SetBool("Run", true);
-				animator.SetBool("Sprint", false);
+				animator.SetBool(PlayerAnimation.Run.ToString(), true);
+				animator.SetBool(PlayerAnimation.Sprint.ToString(), false);
 				stamina = Mathf.Clamp(stamina + Time.deltaTime, 0, playerSetting.maxStamina); ;
 			}
+			
+			if (isGathering)
+				direction = Vector3.zero;
 
 			if (direction == Vector3.zero)
 			{
-				animator.SetBool("Sprint", false);
-				animator.SetBool("Run", false);
+				animator.SetBool(PlayerAnimation.Sprint.ToString(), false);
+				animator.SetBool(PlayerAnimation.Run.ToString(), false);
 			}
 			else
 			{
-				animator.SetBool("Run", true);
+				RotatePlayer(direction);
+				animator.SetBool(PlayerAnimation.Run.ToString(), true);
 			}
-
-			if (isGathering)
-				direction = Vector3.zero;
 
 			var ySpeed = 0f;
 			if (!OnGround())
@@ -152,6 +162,19 @@ namespace GameView
 
 			staminaChanged?.Invoke(stamina);
 			characterController.Move(new Vector3(direction.x, ySpeed, direction.z) * Time.deltaTime);
+		}
+
+		private readonly Quaternion wrongRotation = new Quaternion(1, 0, 0, 0);
+		private readonly Quaternion rightRotation = new Quaternion(0, 1, 0, 0);
+		
+		private void RotatePlayer(Vector3 destination)
+		{
+			var rotation = Quaternion.FromToRotation(Vector3.forward, destination);
+			// Небольшой костыль, в Jira добавил
+			if (rotation == wrongRotation)
+				rotation = rightRotation;
+
+			animator.transform.rotation = Quaternion.Slerp(animator.transform.rotation, rotation, 0.05f);
 		}
 
 		private void Drop()
@@ -191,9 +214,9 @@ namespace GameView
 		private IEnumerator EndGatheringAnimation()
 		{
 			isGathering = true;
-			animator.SetBool("Gathering", true);
+			animator.SetBool(PlayerAnimation.Gathering.ToString(), true);
 			yield return new WaitForSeconds(2.1f);
-			animator.SetBool("Gathering", false);
+			animator.SetBool(PlayerAnimation.Gathering.ToString(), false);
 			isGathering = false;
 		}
 
@@ -215,22 +238,22 @@ namespace GameView
 
 		private void OnTriggerEnter(Collider other)
 		{
-			if (other.gameObject.TryGetComponent<LogView>(out LogView log))
+			if (other.gameObject.TryGetComponent(out LogView log))
 			{
-				if (!log.IsTake)
+				if (!log.IsTake && bag == null)
 				{
 					interaction = log.logic;
 					interactObjectNear?.Invoke(true);
 				}
 			}
 
-			if (other.gameObject.TryGetComponent<BonfireView>(out BonfireView bonfireView))
+			if (other.gameObject.TryGetComponent(out BonfireView bonfireView))
 			{
 				bonfire = bonfireView.bonfireLogic;
 				interactObjectNear?.Invoke(true);
 			}
 
-			if (other.gameObject.TryGetComponent<ImprovementView>(out ImprovementView improvementView))
+			if (other.gameObject.TryGetComponent(out ImprovementView improvementView))
 			{
 				UseImprovment(improvementView.logic.Use());
 			}
@@ -238,15 +261,19 @@ namespace GameView
 
 		private void OnTriggerExit(Collider other)
 		{
-			if (other.gameObject.TryGetComponent<LogView>(out LogView log))
+			if (other.gameObject.TryGetComponent(out LogView log))
 			{
 				if (bag == log.logic)
 				{
 					interactObjectNear?.Invoke(false);
 				}
+				else if (interaction == log.logic)
+				{
+					interactObjectNear?.Invoke(false);
+				}
 			}
 
-			if (other.gameObject.TryGetComponent<BonfireView>(out BonfireView bonfireView))
+			if (other.gameObject.TryGetComponent(out BonfireView bonfireView))
 			{
 				bonfire = null;
 				interactObjectNear?.Invoke(false);
