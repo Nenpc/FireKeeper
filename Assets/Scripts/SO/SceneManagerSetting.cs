@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum SceneName
 {
@@ -13,6 +14,7 @@ public enum SceneName
 [System.Serializable]
 public class SceneSetting
 {
+	public Sprite sceneIcon;
 	public SceneName sceneName;
 	public Object scene;
 }

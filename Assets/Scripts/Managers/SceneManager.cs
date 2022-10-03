@@ -53,7 +53,7 @@ namespace Managers
 
 		public override string ManagerName()
 		{
-			throw new System.NotImplementedException();
+			return "Scene manager";
 		}
 	}
 }

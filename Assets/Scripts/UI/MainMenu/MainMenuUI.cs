@@ -7,24 +7,19 @@ namespace MainMenu
 	public class MainMenuUI : MonoBehaviour
 	{
 		[SerializeField] private Button startGameButton;
-		[SerializeField] private Button loadLastGameButton;
 		[SerializeField] private Button leaderboardButton;
 		[SerializeField] private Button quiteButton;
 		[SerializeField] private GameObject leaderboardPanel;
+		[SerializeField] private LevelPanel levelPanel;
 
 		[SerializeField] private Managers.SceneManager sceneManager;
 
 		private void Awake()
 		{
 			if (startGameButton != null)
-				startGameButton.onClick.AddListener(StartGameClick);
+				startGameButton.onClick.AddListener(ShowLevelPanel);
 			else
 				Debug.LogError("Initialization error start button not set!");
-
-			if (loadLastGameButton != null)
-				loadLastGameButton.onClick.AddListener(LoadLastGameClick);
-			else
-				Debug.LogError("Initialization error load last game button not set!");
 
 			if (leaderboardButton != null)
 				leaderboardButton.onClick.AddListener(LeaderboardClick);
@@ -38,16 +33,14 @@ namespace MainMenu
 
 			if (sceneManager == null)
 				Debug.LogError("Initialization error scene manager setting not set!");
+			
+			if (levelPanel == null)
+				Debug.LogError("Initialization error level panel not set!");
 		}
 
-		private void StartGameClick()
+		private void ShowLevelPanel()
 		{
-			sceneManager.LoadScene(SceneName.SummerLevel);
-		}
-
-		private void LoadLastGameClick()
-		{
-			sceneManager.LoadScene(SceneName.SummerLevel, "Load");
+			levelPanel.gameObject.SetActive(true);
 		}
 
 		private void LeaderboardClick()
@@ -69,10 +62,7 @@ namespace MainMenu
 		private void OnDestroy()
 		{
 			if (startGameButton != null)
-				startGameButton.onClick.RemoveListener(StartGameClick);
-
-			if (loadLastGameButton != null)
-				loadLastGameButton.onClick.RemoveListener(LoadLastGameClick);
+				startGameButton.onClick.RemoveListener(ShowLevelPanel);
 
 			if (leaderboardButton != null)
 				leaderboardButton.onClick.RemoveListener(LeaderboardClick);

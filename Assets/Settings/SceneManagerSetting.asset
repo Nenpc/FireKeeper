@@ -13,7 +13,12 @@ MonoBehaviour:
   m_Name: SceneManagerSetting
   m_EditorClassIdentifier: 
   scenes:
-  - sceneName: 0
+  - sceneIcon: {fileID: 0}
+    sceneName: 0
     scene: {fileID: 102900000, guid: a4c2f88b8c14eb14f8481aa17b180079, type: 3}
-  - sceneName: 1
+  - sceneIcon: {fileID: 21300000, guid: 5f0ad619343b29d42b194495825dd621, type: 3}
+    sceneName: 1
+    scene: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
+  - sceneIcon: {fileID: 21300000, guid: da9e8af6cf8133342b4712677de40afb, type: 3}
+    sceneName: 4
     scene: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
