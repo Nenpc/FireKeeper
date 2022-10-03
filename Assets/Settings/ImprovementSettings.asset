@@ -16,10 +16,22 @@ MonoBehaviour:
   maxImprovementCount: 15
   improvements:
   - type: 0
-    time: 30
+    time: 15
     capacity: 2
-    prefab: {fileID: -7826949002483995996, guid: a33164772da62e0449d44804b9b692a3, type: 3}
+    prefab: {fileID: 2715998854386048088, guid: 95e2ece402b127c40bc1a5d3f09e71de, type: 3}
+    Icon: {fileID: 6556285125441664398, guid: 1c2541e0f0f2ca348ad6dc0fdf7b4839, type: 3}
   - type: 1
-    time: 30
+    time: 15
     capacity: 20
-    prefab: {fileID: 6891272094449534149, guid: c1f0ae5807a1a7e45886a09cbc395dc5, type: 3}
+    prefab: {fileID: 7839192556984972110, guid: e39f98afea0604144a218aa4b8549c82, type: 3}
+    Icon: {fileID: 0}
+  - type: 2
+    time: 15
+    capacity: 1
+    prefab: {fileID: 5415961844102031356, guid: 9cc0f1445a4243c4495e2af3d99e0762, type: 3}
+    Icon: {fileID: 6332873562760171935, guid: dc4b5376bfee61c4fabbca97ffb90dbe, type: 3}
+  - type: 3
+    time: 15
+    capacity: 0
+    prefab: {fileID: 3331483916122527216, guid: 6ee2db16776127241961244021cd2ebf, type: 3}
+    Icon: {fileID: 5412807578283854994, guid: cf7358ae63d782842aa59f123a876a2b, type: 3}

@@ -6,8 +6,10 @@ namespace GameLogic
 {
 	public enum ImprovementType
 	{
-		Speed,
-		Stamina
+		SpeedUp,
+		StaminaRecovery,
+		StaminaInfinite,
+		NoStorm
 	}
 
 	public class Improvement : IDisposable
@@ -20,8 +22,9 @@ namespace GameLogic
 		public float Capacity { get; private set; }
 		public ImprovementView View { get; private set; }
 
-		public Improvement(float time, float capacity)
+		public Improvement(ImprovementType improvementType, float time, float capacity)
 		{
+			this.improvementType = improvementType;
 			Time = time;
 			Capacity = capacity;
 		}
@@ -35,6 +38,11 @@ namespace GameLogic
 		{
 			ImprovementUsed?.Invoke(this);
 			return this;
+		}
+
+		public void SubtractTime()
+		{
+			Time--;
 		}
 
 		public void Dispose()

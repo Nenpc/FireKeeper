@@ -1,5 +1,6 @@
 using GameLogic;
 using System.Collections.Generic;
+using GameUI;
 using UnityEngine;
 
 [System.Serializable]
@@ -12,6 +13,8 @@ public class ImprovementSetting
 	public float capacity;
 
 	public GameView.ImprovementView prefab;
+
+	public ImprovementIcon Icon;
 }
 
 [CreateAssetMenu(fileName = "ImprovementSettings", menuName = "GameSettings/ImprovementSettings", order = 8)]

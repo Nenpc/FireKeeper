@@ -3,13 +3,15 @@ using GameView;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Managers
 {
 	public class ImprovementManager : BaseGameManager
 	{
 		[SerializeField] private ImprovementSettings improvementSettings;
-		[SerializeField] private Transform container;
+		[SerializeField] private Transform pullContainer;
+		[SerializeField] private Transform gameContainer;
 		[SerializeField] private Terrain terrain;
 
 		private List<Improvement> unusedImprovements;
@@ -58,11 +60,12 @@ namespace Managers
 
 			var curImprovement = improvementSettings.GetImprovement((ImprovementType)Random.Range(0, improvementSettings.improvements.Count));
 
-			var improvementLogic = new Improvement(curImprovement.time, curImprovement.capacity);
+			var improvementLogic = new Improvement(curImprovement.type, curImprovement.time, curImprovement.capacity);
 			var improvementView = Instantiate(
 				curImprovement.prefab,
 				FindPosition(),
-				Quaternion.identity).GetComponent<ImprovementView>();
+				Quaternion.Euler(-90,0,0)).GetComponent<ImprovementView>();
+			improvementView.transform.SetParent(gameContainer);
 			improvementView.Initialize(improvementLogic, FindPosition());
 			improvementLogic.ImprovementUsed += ReturnToPull;
 
@@ -80,7 +83,7 @@ namespace Managers
 		private void ReturnToPull(Improvement improvement)
 		{
 			improvement.View.Hide();
-			improvement.View.transform.SetParent(container);
+			improvement.View.transform.SetParent(pullContainer);
 			improvement.View.transform.position = Vector3.zero;
 			improvement.ImprovementUsed-= ReturnToPull;
 
@@ -107,7 +110,7 @@ namespace Managers
 				RaycastHit hit;
 				if (Physics.Raycast(createPosition, Vector3.down, out hit, 100))
 				{
-					return hit.point + Vector3.up;
+					return hit.point + (Vector3.up * 0.1f);
 				}
 				maxTryAmount--;
 
