@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net.Mime;
 using GameView;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +32,6 @@ namespace GameUI
                     arrowRotation = 360 - arrowRotation;
                     
                 arrow.rectTransform.rotation = Quaternion.Euler(0, 0, -arrowRotation);
-                Debug.Log(arrowRotation);
 
                 var arrowPosition = new Vector2(Mathf.Sin(arrowRotation * Mathf.Deg2Rad),
                     Mathf.Cos(arrowRotation * Mathf.Deg2Rad)) * size;
