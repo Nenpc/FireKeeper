@@ -2,6 +2,7 @@ using GameView;
 using GameLogic;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Managers
 {
@@ -15,7 +16,8 @@ namespace Managers
 	public class LogManager : BaseGameManager
 	{
 		[SerializeField] private LogSettings logSettings;
-		[SerializeField] private Transform container;
+		[SerializeField] private Transform pullContainer;
+		[SerializeField] private Transform gameContainer;
 		[SerializeField] private Terrain terrain;
 
 		private List<Log> unusedLogs;
@@ -75,6 +77,7 @@ namespace Managers
 				curLog.prefab,
 				FindPosition(),
 				Quaternion.Euler(0, Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f)));
+			logView.transform.SetParent(gameContainer);
 			logView.Initialize(logLogic, FindPosition());
 			logLogic.LogBurned += ReturnToPull;
 
@@ -92,7 +95,7 @@ namespace Managers
 		private void ReturnToPull(Log log)
 		{
 			log.view.Hide();
-			log.transform.SetParent(container);
+			log.transform.SetParent(pullContainer);
 			log.transform.position = Vector3.zero;
 			log.LogBurned -= ReturnToPull;
 

@@ -20,6 +20,7 @@ namespace GameView
 	{
 		public static Action<float> staminaChanged;
 		public static Action<bool> interactObjectNear;
+		public static Action<Improvement> takeImprovment;
 
 		[SerializeField] private PlayerSetting playerSetting;
 
@@ -33,15 +34,21 @@ namespace GameView
 		[SerializeField] private int hitLayer = 64;
 
 		private Log bag;
-		private Log interaction;
+		private Log nearestLog;
+
+		private Improvement nearestImprovement;
 
 		private Bonfire bonfire;
-
+		
+		private bool staminaInfinity;
 		private float stamina;
 
 		private bool isGathering;
 
 		private bool wait;
+
+		private float runSpeed;
+		private float walkSpeed;
 
 		public bool Initialize()
 		{
@@ -54,7 +61,9 @@ namespace GameView
 			InputManager.Instance.Drop += Drop;
 
 			stamina = playerSetting.maxStamina;
-			TimeManager.Instance.Tiking += ImprovmentTimeCounter;
+			runSpeed = playerSetting.runSpeed;
+			walkSpeed = playerSetting.walkSpeed;
+			TimeManager.Instance.Tiking += ImprovementTimeCounter;
 			TimeManager.Instance.StopAction += StopGame;
 			TimeManager.Instance.ContinueAction += ContinueGame;
 			return true;
@@ -128,13 +137,13 @@ namespace GameView
 
 			if (sprint && stamina > 0 && direction != Vector3.zero)
 			{
-				direction *= playerSetting.runSpeed;
+				direction *= runSpeed;
 				animator.SetBool(PlayerAnimation.Sprint.ToString(), true);
 				stamina = Mathf.Clamp(stamina - Time.deltaTime, 0, playerSetting.maxStamina); 
 			}
 			else
 			{
-				direction *= playerSetting.walkSpeed;
+				direction *= walkSpeed;
 				animator.SetBool(PlayerAnimation.Run.ToString(), true);
 				animator.SetBool(PlayerAnimation.Sprint.ToString(), false);
 				stamina = Mathf.Clamp(stamina + Time.deltaTime, 0, playerSetting.maxStamina); ;
@@ -201,13 +210,20 @@ namespace GameView
 				}
 			}
 
-			if (bag == null && interaction != null)
+			if (bag == null && nearestLog != null)
 			{
-				if (interaction.Take(out bag))
+				if (nearestLog.Take(out bag))
 				{
 					StartCoroutine(EndGatheringAnimation());
 					GetLog();
 				}
+			}
+
+			if (nearestImprovement != null)
+			{
+				UseImprovement(nearestImprovement.Use());
+				interactObjectNear?.Invoke(false);
+				nearestImprovement = null;
 			}
 		}
 
@@ -242,7 +258,7 @@ namespace GameView
 			{
 				if (!log.IsTake && bag == null)
 				{
-					interaction = log.logic;
+					nearestLog = log.logic;
 					interactObjectNear?.Invoke(true);
 				}
 			}
@@ -255,7 +271,8 @@ namespace GameView
 
 			if (other.gameObject.TryGetComponent(out ImprovementView improvementView))
 			{
-				UseImprovment(improvementView.logic.Use());
+				nearestImprovement = improvementView.logic;
+				interactObjectNear?.Invoke(true);
 			}
 		}
 
@@ -267,8 +284,9 @@ namespace GameView
 				{
 					interactObjectNear?.Invoke(false);
 				}
-				else if (interaction == log.logic)
+				else if (nearestLog == log.logic)
 				{
+					nearestLog = null;
 					interactObjectNear?.Invoke(false);
 				}
 			}
@@ -278,38 +296,79 @@ namespace GameView
 				bonfire = null;
 				interactObjectNear?.Invoke(false);
 			}
+			
+			if (other.gameObject.TryGetComponent(out ImprovementView improvementView))
+			{
+				nearestImprovement = null;
+				interactObjectNear?.Invoke(false);
+			}
 		}
 
-		private List<Improvement> improvmentList = new List<Improvement>(5);
-		private void UseImprovment(Improvement improvment)
+		private List<Improvement> improvementList = new List<Improvement>(3);
+
+		private void UseImprovement(Improvement improvment)
 		{
-			Debug.Log("Improvments Used");
+			Debug.Log("Improvements Used");
+			
+			// if (improvementList.Count == improvementList.Capacity)
+			// 	return;
+
 			switch (improvment.improvementType)
 			{
-				case ImprovementType.Stamina:
+				case ImprovementType.SpeedUp:
+					Debug.Log("ImprovementType.SpeedUp " + improvment.Time);
+					improvementList.Add(improvment);
+					runSpeed += improvment.Capacity;
+					takeImprovment?.Invoke(improvment);
 					break;
-				case ImprovementType.Speed:
+				case ImprovementType.StaminaRecovery:
+					Debug.Log("ImprovementType.StaminaRecovery " + improvment.Time);
+					stamina += improvment.Capacity;
+					break;
+				case ImprovementType.StaminaInfinite:
+					Debug.Log("ImprovementType.StaminaInfinite " + improvment.Time);
+					staminaInfinity = true;
+					improvementList.Add(improvment);
+					takeImprovment?.Invoke(improvment);
+					break;
+				case ImprovementType.NoStorm:
+					Debug.Log("ImprovementType.NoStorm " + improvment.Time);
+					improvementList.Add(improvment);
+					takeImprovment?.Invoke(improvment);
 					break;
 			}
 		}
 
-		private void ImprovmentOff(Improvement improvment)
+		private void ImprovementOff(Improvement improvment)
 		{
 			switch (improvment.improvementType)
 			{
-				case ImprovementType.Stamina:
+				case ImprovementType.SpeedUp:
+					Debug.Log("ImprovementType.SpeedUp end " + improvment.Time);
+					runSpeed -= improvment.Capacity;
 					break;
-				case ImprovementType.Speed:
+				case ImprovementType.StaminaInfinite:
+					Debug.Log("ImprovementType.StaminaInfinite end " + improvment.Time);
+					staminaInfinity = false;
+					break;
+				case ImprovementType.NoStorm:
+					Debug.Log("ImprovementType.NoStorm end " + improvment.Time);
 					break;
 			}
+			improvementList.Remove(improvment);
 		}
 
-		private void ImprovmentTimeCounter(int time)
+		private void ImprovementTimeCounter(int time)
 		{
-			//foreach (var improvment in improvmentList)
-			//{
-			//	if ()
-			//}
+			for (int i = 0; i < improvementList.Count; i++)
+			{
+				improvementList[i].SubtractTime();
+				if (improvementList[i].Time <= 0)
+				{
+					ImprovementOff(improvementList[i]);
+					i--;
+				}
+			}
 		}
 	}
 }
