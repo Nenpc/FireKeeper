@@ -9,6 +9,7 @@ namespace GameView
 		[SerializeField] private ParticleSystem spark;
 		[SerializeField] private ParticleSystem smoke;
 		[SerializeField] private ParticleSystem fire;
+		[SerializeField] private ParticleSystem fireSecond;
 		[SerializeField] private Light light;
 
 		[SerializeField] private BonfireSetting setting;
@@ -25,6 +26,8 @@ namespace GameView
 				return false;
 			if (fire == null)
 				return false;
+			if (fireSecond == null)
+				return false;
 			if (light == null)
 				return false;
 
@@ -40,6 +43,7 @@ namespace GameView
 			spark.Play();
 			smoke.Play();
 			fire.Play();
+			fireSecond.Play();
 			light.gameObject.SetActive(true);
 
 			return true;
@@ -50,15 +54,19 @@ namespace GameView
 			value *= 0.01f;
 			spark.startSize = setting.SparkStartSize * value;
 			spark.startSpeed = setting.SparkStartSpeed * value;
-			spark.startSize = setting.SparkStartSize * value;
+			//spark.startSize = setting.SparkStartSize * value;
 
 			smoke.startSize = setting.SmokeStartSize * value;
 			smoke.startSpeed = setting.SmokeStartSpeed * value;
-			smoke.startSize = setting.SmokeStartSize * value;
+			//smoke.startSize = setting.SmokeStartSize * value;
 
 			fire.startSize = setting.FireStartSize * value;
 			fire.startSpeed = setting.FireStartSpeed * value;
-			fire.startSize = setting.FireStartSize * value;
+			//fire.startSize = setting.FireStartSize * value;
+			
+			fireSecond.startSize = setting.FireSecondStartSize * value;
+			fireSecond.startSpeed = setting.FireSecondStartSpeed * value;
+			//fireSecond.startSize = setting.FireSecondStartSize * value;
 
 			light.range = setting.LightRange * value;
 			light.intensity = setting.LightIntensity * value;

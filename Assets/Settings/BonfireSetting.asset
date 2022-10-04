@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LightRange: 15
   LightIntensity: 2
-  SparkStartLifetime: 2.5
-  SparkStartSpeed: 1
+  SparkStartLifetime: 1.3
+  SparkStartSpeed: 0.7
   SparkStartSize: 0.2
-  SmokeStartLifetime: 2.5
-  SmokeStartSpeed: 1
-  SmokeStartSize: 0.2
-  FireStartLifetime: 1
-  FireStartSpeed: 1
+  SmokeStartLifetime: 1.7
+  SmokeStartSpeed: 0.55
+  SmokeStartSize: 1.3
+  FireStartLifetime: 0.7
+  FireStartSpeed: 0.7
   FireStartSize: 0.8
+  FireSecondStartLifetime: 0.6
+  FireSecondStartSpeed: 0.7
+  FireSecondStartSize: 0.25
   FireSound: {fileID: 8300000, guid: 77406fd7e1d55024397fd2bbf169caa5, type: 3}
