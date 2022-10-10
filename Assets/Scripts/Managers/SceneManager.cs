@@ -31,7 +31,7 @@ namespace Managers
 			{
 				if (sceneName == scene.sceneName)
 				{
-					UnityEditor.SceneAsset sceneObject = (UnityEditor.SceneAsset)scene.scene;
+					//UnityEditor.SceneAsset sceneObject = (UnityEditor.SceneAsset)scene.scene;
 					UnityEngine.SceneManagement.SceneManager.LoadScene(scene.sceneName.ToString());
 					break;
 				}
@@ -44,7 +44,7 @@ namespace Managers
 			{
 				if (sceneName == scene.sceneName)
 				{
-					UnityEditor.SceneAsset sceneObject = (UnityEditor.SceneAsset)scene.scene;
+					//UnityEditor.SceneAsset sceneObject = (UnityEditor.SceneAsset)scene.scene;
 					UnityEngine.SceneManagement.SceneManager.LoadScene(scene.scene.name);
 					break;
 				}

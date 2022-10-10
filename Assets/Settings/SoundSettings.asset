@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8faa3512f49235f4eaa8ad147f2fbe86, type: 3}
+  m_Name: SoundSettings
+  m_EditorClassIdentifier: 
+  masterVolume: 1
+  effectVolume: 1
+  musicVolume: 1
+  levelSounds:
+  - sceneName: 0
+    backgroundMusic:
+    - {fileID: 8300000, guid: 8165d15b4eb1a314d927c9313cbd20a4, type: 3}
+  - sceneName: 1
+    backgroundMusic:
+    - {fileID: 8300000, guid: 362c590f0ac1bc044b5bac1a630d7499, type: 3}
+    - {fileID: 8300000, guid: aa42e5db880e7824f9b6b1f817474c83, type: 3}
+  - sceneName: 4
+    backgroundMusic:
+    - {fileID: 8300000, guid: f055fae0b5cabf949b4786b71f91c40e, type: 3}
+    - {fileID: 8300000, guid: 35dad7a57c8f65a4c8c0c4992c301989, type: 3}
