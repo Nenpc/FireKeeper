@@ -3,6 +3,7 @@ using GameLogic;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Managers
 {
@@ -13,7 +14,7 @@ namespace Managers
 		Large
 	}
 
-	public class LogManager : BaseGameManager
+	public class LogManager : MonoBehaviour
 	{
 		[SerializeField] private LogSettings logSettings;
 		[SerializeField] private Transform pullContainer;
@@ -27,42 +28,32 @@ namespace Managers
 		private const int logCreatePositionY = 50;
 		private const int borderIndentCreatePosition = 3;
 
-		public override void Dispose()
+		private TimeManager timeManager;
+
+		[Inject]
+		private void Construct(TimeManager timeManager)
 		{
-			TimeManager.Instance.Tiking -= TryCreateLog;
+			this.timeManager = timeManager;
+
+			timeManager.Tiking += TryCreateLog;
+
+			usedLogs = new List<Log>();
+			unusedLogs = new List<Log>();
+
+			terrainSize = new Vector2(terrain.terrainData.size.x, terrain.terrainData.size.z);
+
+			CreateStartLogs();
+		}
+
+		public void OnDestroy()
+		{
+			timeManager.Tiking -= TryCreateLog;
 
 			usedLogs.Clear();
 			usedLogs = null;
 
 			unusedLogs.Clear();
 			unusedLogs = null;
-		}
-
-		public override bool Initialize()
-		{
-			try
-			{
-				TimeManager.Instance.Tiking += TryCreateLog;
-
-				usedLogs = new List<Log>();
-				unusedLogs = new List<Log>();
-
-				terrainSize = new Vector2(terrain.terrainData.size.x, terrain.terrainData.size.z);
-
-				CreateStartLogs();
-
-				return true;
-			}
-			catch
-			{
-				Debug.LogWarning("LogManager Launch problems");
-				return false;
-			}
-		}
-
-		public override string ManagerName()
-		{
-			return "Log";
 		}
 
 		private void TryCreateLog(int time = 0)

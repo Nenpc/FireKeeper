@@ -5,6 +5,7 @@ using GameLogic;
 using GameView;
 using Managers;
 using UnityEngine;
+using Zenject;
 
 namespace GameUI
 {
@@ -14,11 +15,25 @@ namespace GameUI
 
         private List<ImprovementIcon> improvementIcons;
 
-        private void Start()
+        private Player player;
+        private TimeManager timeManager;
+
+        [Inject]
+        private void Construct(Player player, TimeManager timeManager)
         {
-            TimeManager.Instance.Tiking += TimeTick;
-            Player.takeImprovment += AddImprovement;
+            this.player = player;
+            this.timeManager = timeManager;
+            
+            timeManager.Tiking += TimeTick;
+            player.takeImprovment += AddImprovement;
             improvementIcons = new List<ImprovementIcon>();
+        }
+
+        private void OnDestroy()
+        {
+            timeManager.Tiking -= TimeTick;
+            player.takeImprovment -= AddImprovement;
+            improvementIcons = null;
         }
 
         private void AddImprovement(Improvement improvement)

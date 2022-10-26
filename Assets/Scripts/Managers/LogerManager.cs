@@ -1,22 +1,14 @@
 using UnityEngine;
+using Zenject;
 
 namespace Managers
 {
-	public class LogerManager : BaseGameManager
+	public class LogerManager : MonoBehaviour
 	{
-		public override void Dispose()
+		[Inject]
+		private void Construct()
 		{
-			throw new System.NotImplementedException();
-		}
-
-		public override bool Initialize()
-		{
-			return true;
-		}
-
-		public override string ManagerName()
-		{
-			return "Loger";
+			DontDestroyOnLoad(gameObject);
 		}
 	}
 }

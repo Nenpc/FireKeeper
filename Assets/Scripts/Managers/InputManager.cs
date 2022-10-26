@@ -1,12 +1,11 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 namespace Managers
 {
-	public class InputManager : BaseGameManager
+	public class InputManager : MonoBehaviour
 	{
-		public static InputManager Instance;
-
 		[SerializeField] private InputSetting inputSetting;
 
 		public Action<bool> GoFront;
@@ -20,12 +19,21 @@ namespace Managers
 
 		private bool wait;
 
-		public override void Dispose()
+		private TimeManager timeManager;
+		
+		[Inject]
+		private void Construct(TimeManager timeManager)
 		{
-			Instance = null;
+			this.timeManager = timeManager;
+			
+			timeManager.StopAction += StopGame;
+			timeManager.ContinueAction += ContinueGame;
+		}
 
-			TimeManager.Instance.StopAction -= StopGame;
-			TimeManager.Instance.ContinueAction -= ContinueGame;
+		public void OnDestroy()
+		{
+			timeManager.StopAction -= StopGame;
+			timeManager.ContinueAction -= ContinueGame;
 		}
 
 		private void StopGame()
@@ -36,30 +44,6 @@ namespace Managers
 		private void ContinueGame()
 		{
 			wait = false;
-		}
-
-		public override bool Initialize()
-		{
-			try
-			{
-				if (Instance != null)
-				{
-					Debug.LogWarning("Input manager alredy inicialized");
-					return false;
-				}
-
-				Instance = this;
-
-				TimeManager.Instance.StopAction += StopGame;
-				TimeManager.Instance.ContinueAction += ContinueGame;
-
-				return true;
-			}
-			catch
-			{
-				Debug.LogWarning("Input manager Launch problems");
-				return false;
-			}
 		}
 
 		private void Update()
@@ -121,11 +105,6 @@ namespace Managers
 			{
 				Drop();
 			}
-		}
-
-		public override string ManagerName()
-		{
-			return "Input manager";
 		}
 	}
 }

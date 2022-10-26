@@ -2,11 +2,12 @@ using System;
 using System.Net.Mime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 using Random = UnityEngine.Random;
 
 namespace Managers
 {
-	public class SoundManager : BaseGameManager
+	public class SoundManager : MonoBehaviour
 	{
 		[SerializeField] private SoundSettings soundSettings;
 		[SerializeField] private SceneManagerSetting sceneManagerSetting;
@@ -15,31 +16,18 @@ namespace Managers
 		private SceneName currentScene = SceneName.Menu;
 		private AudioClip currentAudioClip;
 
-		private void Awake()
+		[Inject]
+		private void Construct()
 		{
-			Initialize();
-		}
-
-		public override void Dispose()
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override bool Initialize()
-		{
-			if (soundSettings == null)
-				return false;
-			
 			UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
 			StartNextSound();
 			
 			DontDestroyOnLoad(gameObject);
-			return true;
 		}
 
-		public override string ManagerName()
+		public void OnDestroy()
 		{
-			return "Sound";
+			UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
 		}
 		
 		void OnSceneLoaded(Scene scene, LoadSceneMode mode) {

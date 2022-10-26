@@ -1,9 +1,11 @@
 using System;
+using GameLogic;
 using UnityEngine;
+using Zenject;
 
 namespace GameView
 {
-	public class BonfireView : MonoBehaviour, IDisposable
+	public class BonfireView : MonoBehaviour
 	{
 		[SerializeField] private AudioSource sound;
 		[SerializeField] private ParticleSystem spark;
@@ -14,26 +16,18 @@ namespace GameView
 
 		[SerializeField] private BonfireSetting setting;
 
-		public GameLogic.Bonfire bonfireLogic;
+		public Bonfire bonfireLogic;
 
-		public bool Initialize(GameLogic.Bonfire bonfireLogic)
+		[Inject]
+		private void Construct(Bonfire bonfireLogic)
 		{
-			if (sound == null)
-				return false;
-			if (spark == null)
-				return false;
-			if (smoke == null)
-				return false;
-			if (fire == null)
-				return false;
-			if (fireSecond == null)
-				return false;
-			if (light == null)
-				return false;
-
 			this.bonfireLogic = bonfireLogic;
-			GameLogic.Bonfire.FireGoOut += FireGoOut;
-			GameLogic.Bonfire.Lifetime += SetBonfireView;
+		}
+
+		public void Awake()
+		{
+			bonfireLogic.FireGoOut += FireGoOut;
+			bonfireLogic.Lifetime += SetBonfireView;
 
 			sound.clip = setting.FireSound;
 			sound.Play();
@@ -45,8 +39,6 @@ namespace GameView
 			fire.Play();
 			fireSecond.Play();
 			light.gameObject.SetActive(true);
-
-			return true;
 		}
 
 		public void SetBonfireView(float value)
@@ -84,10 +76,10 @@ namespace GameView
 			light.gameObject.SetActive(false);
 		}
 
-		public void Dispose()
+		public void OnDestroy()
 		{
-			GameLogic.Bonfire.FireGoOut -= FireGoOut;
-			GameLogic.Bonfire.Lifetime -= SetBonfireView;
+			bonfireLogic.FireGoOut -= FireGoOut;
+			bonfireLogic.Lifetime -= SetBonfireView;
 		}
 	}
 }

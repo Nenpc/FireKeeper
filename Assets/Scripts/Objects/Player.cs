@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace GameView
 {
@@ -16,11 +17,11 @@ namespace GameView
 	}
 
 	[RequireComponent(typeof(CharacterController), typeof(Transform))]
-	public class Player : MonoBehaviour, IInitialize, IDisposable
+	public class Player : MonoBehaviour
 	{
-		public static Action<float> staminaChanged;
-		public static Action<bool> interactObjectNear;
-		public static Action<Improvement> takeImprovment;
+		public Action<float> staminaChanged;
+		public Action<bool> interactObjectNear;
+		public Action<Improvement> takeImprovment;
 
 		[SerializeField] private PlayerSetting playerSetting;
 
@@ -50,23 +51,30 @@ namespace GameView
 		private float runSpeed;
 		private float walkSpeed;
 
-		public bool Initialize()
-		{
-			InputManager.Instance.GoFront += GoFront;
-			InputManager.Instance.GoRight += GoRight;
-			InputManager.Instance.GoLeft += GoLeft;
-			InputManager.Instance.GoBack += GoBack;
-			InputManager.Instance.Sprint += Sprint;
-			InputManager.Instance.Interaction += Interaction;
-			InputManager.Instance.Drop += Drop;
+		private InputManager inputManager;
+		private TimeManager timeManager;
 
+		[Inject]
+		private void Construct(InputManager inputManager, TimeManager timeManager)
+		{
+			this.inputManager = inputManager;
+			this.timeManager = timeManager;
+			
+			this.inputManager.GoFront += GoFront;
+			this.inputManager.GoRight += GoRight;
+			this.inputManager.GoLeft += GoLeft;
+			this.inputManager.GoBack += GoBack;
+			this.inputManager.Sprint += Sprint;
+			this.inputManager.Interaction += Interaction;
+			this.inputManager.Drop += Drop;
+
+			this.timeManager.Tiking += ImprovementTimeCounter;
+			this.timeManager.StopAction += StopGame;
+			this.timeManager.ContinueAction += ContinueGame;
+			
 			stamina = playerSetting.maxStamina;
 			runSpeed = playerSetting.runSpeed;
 			walkSpeed = playerSetting.walkSpeed;
-			TimeManager.Instance.Tiking += ImprovementTimeCounter;
-			TimeManager.Instance.StopAction += StopGame;
-			TimeManager.Instance.ContinueAction += ContinueGame;
-			return true;
 		}
 
 		#region InputMethodValue
@@ -85,18 +93,18 @@ namespace GameView
 		private void Sprint(bool value) { sprint = value; }
 		#endregion
 
-		public void Dispose()
+		private void OnDestroy()
 		{
-			TimeManager.Instance.StopAction -= StopGame;
-			TimeManager.Instance.ContinueAction -= ContinueGame;
+			timeManager.StopAction -= StopGame;
+			timeManager.ContinueAction -= ContinueGame;
 
-			InputManager.Instance.GoFront -= GoFront;
-			InputManager.Instance.GoRight -= GoRight;
-			InputManager.Instance.GoLeft -= GoLeft;
-			InputManager.Instance.GoBack -= GoBack;
-			InputManager.Instance.Sprint -= Sprint;
-			InputManager.Instance.Interaction -= Interaction;
-			InputManager.Instance.Drop -= Drop;
+			inputManager.GoFront -= GoFront;
+			inputManager.GoRight -= GoRight;
+			inputManager.GoLeft -= GoLeft;
+			inputManager.GoBack -= GoBack;
+			inputManager.Sprint -= Sprint;
+			inputManager.Interaction -= Interaction;
+			inputManager.Drop -= Drop;
 		}
 
 		private void StopGame()

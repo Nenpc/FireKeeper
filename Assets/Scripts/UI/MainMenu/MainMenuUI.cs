@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using AdditionalFunctions;
+using Managers;
+using Zenject;
 
 namespace MainMenu
 {
@@ -12,7 +14,15 @@ namespace MainMenu
 		[SerializeField] private GameObject leaderboardPanel;
 		[SerializeField] private LevelPanel levelPanel;
 
-		[SerializeField] private Managers.SceneManager sceneManager;
+		private SceneManager sceneManager;
+		private AlertSystem alertSystem;
+
+		[Inject]
+		private void Construct(SceneManager sceneManager, AlertSystem alertSystem)
+		{
+			this.sceneManager = sceneManager;
+			this.alertSystem = alertSystem;
+		}
 
 		private void Awake()
 		{
@@ -30,9 +40,6 @@ namespace MainMenu
 				quiteButton.onClick.AddListener(QuiteClick);
 			else
 				Debug.LogError("Initialization error quite button not set!");
-
-			if (sceneManager == null)
-				Debug.LogError("Initialization error scene manager setting not set!");
 			
 			if (levelPanel == null)
 				Debug.LogError("Initialization error level panel not set!");
@@ -50,7 +57,7 @@ namespace MainMenu
 
 		private void QuiteClick()
 		{
-			AlertSystem.Instance.ShowMessageOkCancel(
+			alertSystem.ShowMessageOkCancel(
 				"Are you sure you want to exit the game?", "Ok", "Cancel", QuitGame, null);
 		}
 

@@ -4,53 +4,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Managers
 {
-	public class ImprovementManager : BaseGameManager
+	public class ImprovementManager : MonoBehaviour
 	{
 		[SerializeField] private ImprovementSettings improvementSettings;
 		[SerializeField] private Transform pullContainer;
 		[SerializeField] private Transform gameContainer;
 		[SerializeField] private Terrain terrain;
-
+		
 		private List<Improvement> unusedImprovements;
 		private List<Improvement> usedImprovements;
 		private Vector2 terrainSize;
+		
+		private TimeManager timeManager;
 
 		private const int improvementPositionY = 50;
 		private const int borderIndentCreatePosition = 3;
 
-		public override void Dispose()
+		[Inject]
+		private void Construct(TimeManager timeManager)
 		{
-			throw new System.NotImplementedException();
+			this.timeManager = timeManager;
+
+			timeManager.Tiking += TryCreateImprovement;
+
+			usedImprovements = new List<Improvement>();
+			unusedImprovements = new List<Improvement>();
+
+			terrainSize = new Vector2(terrain.terrainData.size.x, terrain.terrainData.size.z);
+
+			CreateStartLogs();
 		}
 
-		public override bool Initialize()
+		public void OnDestroy()
 		{
-			try
-			{
-				TimeManager.Instance.Tiking += TryCreateImprovement;
-
-				usedImprovements = new List<Improvement>();
-				unusedImprovements = new List<Improvement>();
-
-				terrainSize = new Vector2(terrain.terrainData.size.x, terrain.terrainData.size.z);
-
-				CreateStartLogs();
-
-				return true;
-			}
-			catch
-			{
-				Debug.LogWarning("LogManager Launch problems");
-				return false;
-			}
-		}
-
-		public override string ManagerName()
-		{
-			return "Improvement";
+			timeManager.Tiking -= TryCreateImprovement;
 		}
 
 		private void TryCreateImprovement(int time = 0)

@@ -1,13 +1,13 @@
 using Managers;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace MainMenu
 {
 
     public class LevelPanel : MonoBehaviour
     {
-        [SerializeField] private SceneManager sceneManager;
         [SerializeField] private LevelItem levelItemPrefab;
         [SerializeField] private Transform panel;
         [SerializeField] private SceneManagerSetting sceneManagerSetting;
@@ -15,6 +15,14 @@ namespace MainMenu
         [SerializeField] private Button startGame;
 
         private SceneSetting selectedScene;
+        
+        private SceneManager sceneManager;
+
+        [Inject]
+        private void Construct(SceneManager sceneManager)
+        {
+            this.sceneManager = sceneManager;
+        }
 
         private void Awake()
         {

@@ -1,28 +1,16 @@
 using UnityEngine;
+using Zenject;
 
 namespace Managers
 {
-	public class SceneManager : BaseGameManager
+	public class SceneManager : MonoBehaviour
 	{
 		[SerializeField] private SceneManagerSetting sceneManagerSetting;
 
-		private void Awake()
+		[Inject]
+		private void Construct()
 		{
-			Initialize();
-		}
-
-		public override void Dispose()
-		{
-		}
-
-		public override bool Initialize()
-		{
-			if (sceneManagerSetting == null)
-			{
-				Debug.LogError("SceneManager not initialized");
-				return false;
-			}
-			return true;
+			DontDestroyOnLoad(gameObject);
 		}
 
 		public void LoadScene(SceneName sceneName)
@@ -51,7 +39,7 @@ namespace Managers
 			}
 		}
 
-		public override string ManagerName()
+		public string ManagerName()
 		{
 			return "Scene manager";
 		}

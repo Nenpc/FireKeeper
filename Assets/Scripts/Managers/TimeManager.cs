@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace Managers
 {
-	public class TimeManager : BaseGameManager
+	public class TimeManager : MonoBehaviour
 	{
-		public static TimeManager Instance;
-
 		public Action<int> Tiking;
 		public Action StopAction;
 		public Action ContinueAction;
@@ -17,6 +15,13 @@ namespace Managers
 
 		private bool active;
 		private bool started;
+		
+		[Inject]
+		public void Construct()
+		{
+			started = true;
+			_lostTime = 0;
+		}
 
 		public void Stop()
 		{
@@ -51,29 +56,6 @@ namespace Managers
 				Tiking?.Invoke((int)_gameTime);
 				_lostTime--;
 			}
-		}
-
-		public override void Dispose()
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override bool Initialize()
-		{
-			if (TimeManager.Instance != null)
-			{
-				return false;
-			}
-
-			TimeManager.Instance = this;
-			started = true;
-			_lostTime = 0;
-			return true;
-		}
-
-		public override string ManagerName()
-		{
-			return "Time";
 		}
 	}
 }

@@ -5,10 +5,11 @@ using TMPro;
 //using Lean.Localization;
 using UnityEngine.Events;
 using System;
+using Zenject;
 
 namespace AdditionalFunctions
 {
-    public class AlertSystem : MonoBehaviour, IDisposable
+    public class AlertSystem : MonoBehaviour
 	{
         [SerializeField] private GameObject _mainWindow;
         [Header("Texts")] [SerializeField] private TMP_Text _textHeader;
@@ -19,16 +20,10 @@ namespace AdditionalFunctions
         [Header("Button Actions")] private UnityAction _actionOk;
         private UnityAction _actionCancel;
 
-        private static AlertSystem instance;
-        public static AlertSystem Instance => instance;
-
-        private void Awake()
+        [Inject]
+        private void Construct()
         {
-            if (instance == null)
-            {
-                instance = this;
-                DontDestroyOnLoad(instance);
-            }
+	        DontDestroyOnLoad(gameObject);
         }
 
         private void SetText(string message, string header = null)
@@ -152,10 +147,5 @@ namespace AdditionalFunctions
             _actionCancel?.Invoke();
             HideAlert();
         }
-
-		public void Dispose()
-		{
-			instance = null;
-		}
 	}
 }

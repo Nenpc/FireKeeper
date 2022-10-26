@@ -1,6 +1,7 @@
 using GameView;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace GameUI
 {
@@ -8,15 +9,18 @@ namespace GameUI
     {
         [SerializeField] private Image arrow;
         [SerializeField] private int hideDistance = 10;
-        
-        [Space]
-        [SerializeField] private Player player;
-        [SerializeField] private BonfireView bonefire;
+
+        private Player player;
+        private BonfireView bonefire;
         
         private int size;
 
-        private void Awake()
+        [Inject]
+        private void Construct(Player player, BonfireView bonefire)
         {
+            this.player = player;
+            this.bonefire = bonefire;
+            
             size = (int)(GetComponent<RectTransform>().sizeDelta.x * 0.5f);
         }
 

@@ -19,7 +19,7 @@ namespace AdditionalFunctions
 		{
 			if (!PlayerPrefs.HasKey("safetyAlertShownOnce"))
 			{
-				AlertSystem.Instance.ShowMessageOk(mainText, buttonText, headerText);
+				//AlertSystem.Instance.ShowMessageOk(mainText, buttonText, headerText);
 				PlayerPrefs.SetInt("safetyAlertShownOnce", 1);
 			}
 		}
