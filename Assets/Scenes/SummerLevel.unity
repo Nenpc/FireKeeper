@@ -1646,10 +1646,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dd87a2158e704c4893e3c26738edd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logSettings: {fileID: 11400000, guid: 87a5aa91571f2304cad979c1b77d10cf, type: 2}
+  objectLayerMask: 256
+  minDistanceFromBonfire: 15
+  minDistanceFromSameObject: 3
   pullContainer: {fileID: 898425814}
   gameContainer: {fileID: 959783410}
   terrain: {fileID: 913061829}
+  logSettings: {fileID: 11400000, guid: 87a5aa91571f2304cad979c1b77d10cf, type: 2}
 --- !u!4 &934313944
 Transform:
   m_ObjectHideFlags: 0
@@ -3015,8 +3018,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arrow: {fileID: 1273429066}
   hideDistance: 10
-  player: {fileID: 0}
-  bonefire: {fileID: 0}
 --- !u!1 &1716231174
 GameObject:
   m_ObjectHideFlags: 0
@@ -3226,6 +3227,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1742377367}
   m_CullTransparentMesh: 1
+--- !u!1 &1787861122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1787861123}
+  m_Layer: 0
+  m_Name: ComplicationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1787861123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1787861122}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 59.159996, y: -5.8874836, z: 73.04924}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1926819849
 GameObject:
   m_ObjectHideFlags: 0
@@ -3616,10 +3647,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca21f939d62799045925176aebefefa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  improvementSettings: {fileID: 11400000, guid: 8d5007bd65f50864f92b84160a042885, type: 2}
+  objectLayerMask: 128
+  minDistanceFromBonfire: 15
+  minDistanceFromSameObject: 7
   pullContainer: {fileID: 752367584}
   gameContainer: {fileID: 1926819850}
   terrain: {fileID: 913061829}
+  improvementSettings: {fileID: 11400000, guid: 8d5007bd65f50864f92b84160a042885, type: 2}
 --- !u!4 &7148267278701214013
 Transform:
   m_ObjectHideFlags: 0
