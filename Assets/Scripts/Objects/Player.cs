@@ -29,8 +29,7 @@ namespace GameView
 		[SerializeField] private CharacterController characterController;
 		[SerializeField] private Transform logPosition;
 
-		[Header ("Jump")]
-		[SerializeField] private float downSpeed = -18;
+		[Header("Jump")] [SerializeField] private float downSpeed = -18;
 		[SerializeField] private float hitDistance = 1f;
 		[SerializeField] private int hitLayer = 64;
 
@@ -41,8 +40,12 @@ namespace GameView
 
 		private Bonfire bonfire;
 		
+		private readonly float maxWaitRestoreStaminaTime = 1.5f;
+		private float waitRestoreTime;
+		
 		private bool staminaInfinity;
 		private float stamina;
+		private bool haveEnd = false;
 
 		private bool isGathering;
 
@@ -59,7 +62,7 @@ namespace GameView
 		{
 			this.inputManager = inputManager;
 			this.timeManager = timeManager;
-			
+
 			this.inputManager.GoFront += GoFront;
 			this.inputManager.GoRight += GoRight;
 			this.inputManager.GoLeft += GoLeft;
@@ -71,26 +74,53 @@ namespace GameView
 			this.timeManager.Tiking += ImprovementTimeCounter;
 			this.timeManager.StopAction += StopGame;
 			this.timeManager.ContinueAction += ContinueGame;
-			
+
 			stamina = playerSetting.maxStamina;
 			runSpeed = playerSetting.runSpeed;
 			walkSpeed = playerSetting.walkSpeed;
 		}
 
 		#region InputMethodValue
+
 		private bool goFront;
 		private bool goRight;
 		private bool goLeft;
 		private bool goBack;
 		private bool sprint;
+
 		#endregion
 
 		#region InputMethodHandler
-		private void GoFront(bool value) { goFront = value;}
-		private void GoRight(bool value) { goRight = value; }
-		private void GoLeft(bool value) { goLeft = value; }
-		private void GoBack(bool value) { goBack = value; }
-		private void Sprint(bool value) { sprint = value; }
+
+		private void GoFront(bool value)
+		{
+			goFront = value;
+		}
+
+		private void GoRight(bool value)
+		{
+			goRight = value;
+		}
+
+		private void GoLeft(bool value)
+		{
+			goLeft = value;
+		}
+
+		private void GoBack(bool value)
+		{
+			goBack = value;
+		}
+
+		private void Sprint(bool value)
+		{
+			sprint = value;
+			if (value == false)
+			{
+				haveEnd = false;
+			}
+		}
+
 		#endregion
 
 		private void OnDestroy()
@@ -123,6 +153,7 @@ namespace GameView
 			{
 				return true;
 			}
+
 			return false;
 		}
 
@@ -143,20 +174,22 @@ namespace GameView
 
 			direction = direction.normalized;
 
-			if (sprint && stamina > 0 && direction != Vector3.zero)
+			if (sprint && stamina > 0 && direction != Vector3.zero && !haveEnd)
 			{
 				direction *= runSpeed;
 				animator.SetBool(PlayerAnimation.Sprint.ToString(), true);
-				stamina = Mathf.Clamp(stamina - Time.deltaTime, 0, playerSetting.maxStamina); 
+				waitRestoreTime = maxWaitRestoreStaminaTime;
+				if (!staminaInfinity)
+					stamina = Mathf.Clamp(stamina - Time.deltaTime, 0, playerSetting.maxStamina);
 			}
 			else
 			{
 				direction *= walkSpeed;
 				animator.SetBool(PlayerAnimation.Run.ToString(), true);
 				animator.SetBool(PlayerAnimation.Sprint.ToString(), false);
-				stamina = Mathf.Clamp(stamina + Time.deltaTime, 0, playerSetting.maxStamina); ;
+				RestoreStamina();
 			}
-			
+
 			if (isGathering)
 				direction = Vector3.zero;
 
@@ -179,6 +212,21 @@ namespace GameView
 
 			staminaChanged?.Invoke(stamina);
 			characterController.Move(new Vector3(direction.x, ySpeed, direction.z) * Time.deltaTime);
+		}
+
+		private void RestoreStamina()
+		{
+			if (waitRestoreTime <= 0)
+			{
+				stamina = Mathf.Clamp(stamina + Time.deltaTime, 0, playerSetting.maxStamina);
+			}
+			else
+			{
+				waitRestoreTime -= Time.deltaTime;
+			}
+
+			if (stamina < 0.1f)
+				haveEnd = true;
 		}
 
 		private readonly Quaternion wrongRotation = new Quaternion(1, 0, 0, 0);
@@ -331,10 +379,11 @@ namespace GameView
 					break;
 				case ImprovementType.StaminaRecovery:
 					Debug.Log("ImprovementType.StaminaRecovery " + improvment.Time);
-					stamina += improvment.Capacity;
+					stamina = Mathf.Clamp(stamina + improvment.Capacity, 0, playerSetting.maxStamina);
 					break;
 				case ImprovementType.StaminaInfinite:
 					Debug.Log("ImprovementType.StaminaInfinite " + improvment.Time);
+					stamina = playerSetting.maxStamina;
 					staminaInfinity = true;
 					improvementList.Add(improvment);
 					takeImprovment?.Invoke(improvment);
