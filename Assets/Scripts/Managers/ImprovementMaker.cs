@@ -20,7 +20,7 @@ namespace Managers
 			this.timeService = timeService;
 			this.bonfire = bonfire;
 
-			this.timeService.TickingSubscribe(TryCreateImprovement);
+			this.timeService.TickingEvent += TryCreateImprovement;
 
 			usedImprovements = new List<Improvement>();
 			unusedImprovements = new List<Improvement>();
@@ -32,7 +32,7 @@ namespace Managers
 
 		public void OnDestroy()
 		{
-			timeService.TickingUnsubscribe(TryCreateImprovement);
+			timeService.TickingEvent -= TryCreateImprovement;
 			
 			unusedImprovements.Clear();
 			usedImprovements.Clear();

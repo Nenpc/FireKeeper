@@ -5,9 +5,7 @@ using UnityEngine.UI;
 
 public class WinMenuUI : MonoBehaviour
 {
-    private Action mainMenuAction;
-    public void MainMenuActionSubscribe(Action function) => mainMenuAction += function;
-    public void MainMenuActionUnsubscribe(Action function) => mainMenuAction -= function;
+    private event Action MainMenuEvent;
 
     [SerializeField] private TextMeshProUGUI nextLevelText;
     [SerializeField] private TextMeshProUGUI nextLevelNameText;
@@ -45,6 +43,6 @@ public class WinMenuUI : MonoBehaviour
 
     private void MainMenu()
     {
-        mainMenuAction?.Invoke();
+        MainMenuEvent?.Invoke();
     }
 }

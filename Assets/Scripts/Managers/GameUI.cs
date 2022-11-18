@@ -11,30 +11,19 @@ namespace Managers
 {
 	public interface IGameUI
 	{
-		void ContinueSubscribe(Action function);
-		void ContinueUnsubscribe(Action function);
-		void RestartSubscribe(Action function);
-		void RestartUnsubscribe(Action function);
-		void ReturnToMainMenuSubscribe(Action function);
-		void ReturnToMainMenuUnsubscribe(Action function);
+		event Action ContinueEvent;
+		event Action RestartEvent;
+		event Action ReturnToMainMenuEvent;
 		void ShowLosePanel();
 		void ShowWinPanel(string sceneName);
 	}
 
 	public class GameUI : MonoBehaviour, IGameUI
 	{
-		private Action continueAction;
-		public void ContinueSubscribe(Action function) => continueAction += function;
-		public void ContinueUnsubscribe(Action function) => continueAction -= function;
+		public event Action ContinueEvent;
+		public event Action RestartEvent;
+		public event Action ReturnToMainMenuEvent;
 
-		private Action restartAction;
-		public void RestartSubscribe(Action function) => restartAction += function;
-		public void RestartUnsubscribe(Action function) => restartAction -= function;
-		
-		private Action returnToMainMenuAction;
-		public void ReturnToMainMenuSubscribe(Action function) => returnToMainMenuAction += function;
-		public void ReturnToMainMenuUnsubscribe(Action function) => returnToMainMenuAction -= function;
-		
 		[SerializeField] private PlayerSetting playerSetting;
 		[SerializeField] private DifficultSetting difficultSetting;
 
@@ -57,32 +46,32 @@ namespace Managers
 			this.player = player;
 			this.bonfire = bonfire;
 			
-			this.player.StaminaChangedSubscribe(UpdateStaminaInfo);
-			this.player.InteractObjectNearSubscribe(SeeInteract);
+			this.player.StaminaChangedEvent += UpdateStaminaInfo;
+			this.player.InteractObjectNearEvent += SeeInteract;
 
-			this.bonfire.LifetimeSubscribe(UpdateBonfireInfo);
+			this.bonfire.LifetimeEvent += UpdateBonfireInfo;
 			
-			pauseMenu.ContinueGameActionSubscribe(Continue);
-			pauseMenu.MainMenuActionSubscribe(ReturnToMainMenu);
+			pauseMenu.ContinueGameEvent += Continue;
+			pauseMenu.MainMenuEvent += ReturnToMainMenu;
 			
-			loseGame.RestartGameActionSubscribe(Restart);
-			loseGame.MainMenuActionSubscribe(ReturnToMainMenu);
+			loseGame.RestartGameEvent += Restart;
+			loseGame.MainMenuEvent += ReturnToMainMenu;
 
 			interactText.gameObject.SetActive(false);
 		}
 
 		private void OnDestroy()
 		{
-			player.StaminaChangedUnsubscribe(UpdateStaminaInfo);
-			player.InteractObjectNearUnsubscribe(SeeInteract);
+			player.StaminaChangedEvent -= UpdateStaminaInfo;
+			player.InteractObjectNearEvent -= SeeInteract;
 			
-			pauseMenu.ContinueGameActionUnsubscribe(Continue);
-			pauseMenu.MainMenuActionUnsubscribe(ReturnToMainMenu);
+			pauseMenu.ContinueGameEvent -= Continue;
+			pauseMenu.MainMenuEvent -= ReturnToMainMenu;
 			
-			loseGame.RestartGameActionUnsubscribe(Restart);
-			loseGame.MainMenuActionUnsubscribe(ReturnToMainMenu);
+			loseGame.RestartGameEvent -= Restart;
+			loseGame.MainMenuEvent -= ReturnToMainMenu;
 			
-			bonfire.LifetimeUnsubscribe(UpdateBonfireInfo);
+			bonfire.LifetimeEvent -= UpdateBonfireInfo;
 		}
 
 		private void Continue()

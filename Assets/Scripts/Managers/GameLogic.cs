@@ -32,20 +32,22 @@ namespace Managers
 			//if (!cameraPosition.Initialize())
 			//	return false;
 
-			this.bonfire.FireGoOutSubscribe(EndGame);
-			this.gameUI.RestartSubscribe(RestartGame);
-			this.gameUI.ContinueSubscribe(RestartGame);
+			this.bonfire.FireGoOutEvent += EndGame;
+			this.gameUI.RestartEvent += RestartGame;
+			this.gameUI.ContinueEvent += RestartGame;
 
 			this.timeService.Continue();
-			
-			this.win.WinActionSubscribe(WinGame);
+
+			this.win.WinEvent += WinGame;
 		}
 
 		private void OnDestroy()
 		{
-			bonfire.FireGoOutUnsubscribe(EndGame);
-			gameUI.RestartUnsubscribe(RestartGame);
-			gameUI.ContinueUnsubscribe(RestartGame);
+			bonfire.FireGoOutEvent -= EndGame;
+			gameUI.RestartEvent -= RestartGame;
+			gameUI.ContinueEvent -= RestartGame;
+			
+			win.WinEvent -= WinGame;
 		}
 
 		private void EndGame()

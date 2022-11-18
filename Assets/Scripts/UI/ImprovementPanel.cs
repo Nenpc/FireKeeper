@@ -22,15 +22,15 @@ namespace GameUI
             this.player = player;
             this.timeService = timeService;
             
-            timeService.TickingSubscribe(TimeTick);
-            player.TakeImprovementSubscribe(AddImprovement);
+            timeService.TickingEvent += TimeTick;
+            player.TakeImprovementEvent += AddImprovement;
             improvementIcons = new List<ImprovementIcon>();
         }
 
         private void OnDestroy()
         {
-            timeService.TickingUnsubscribe(TimeTick);
-            player.TakeImprovementUnsubscribe(AddImprovement);
+            timeService.TickingEvent -= TimeTick;
+            player.TakeImprovementEvent -= AddImprovement;
             improvementIcons = null;
         }
 

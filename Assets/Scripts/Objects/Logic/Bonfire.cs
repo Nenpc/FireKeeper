@@ -8,28 +8,18 @@ namespace GameLogic
     public interface IBonfire
     {
         void AddLog(float quality);
-        void FireGoOutSubscribe(Action function);
-        void FireGoOutUnsubscribe(Action function);
-        void LifetimeSubscribe(Action<float> function);
-        void LifetimeUnsubscribe(Action<float> function);
+        event Action FireGoOutEvent;
+        event Action<float> LifetimeEvent;
         Transform GetTransform();
         Vector3 GetStartPosition();
     }
 
     public class Bonfire : IDisposable, IBonfire, IEndGame
     {
-        private Action fireGoOutAction;
-        public void FireGoOutSubscribe(Action function) => fireGoOutAction += function;
-        public void FireGoOutUnsubscribe(Action function) => fireGoOutAction -= function;
-
-        private Action<float> lifetimeAction;
-        public void LifetimeSubscribe(Action<float> function) => lifetimeAction += function;
-        public void LifetimeUnsubscribe(Action<float> function) => lifetimeAction -= function;
+        public event Action FireGoOutEvent;
+        public event Action<float> LifetimeEvent;
+        public event Action EndGameEvent;
         
-        private Action endGameAction;
-        public void EndGameSubscribe(Action function) => endGameAction += function;
-        public void EndGameUnsubscribe(Action function) => endGameAction -= function;
-
         private int maxLifetime = 100;
         private float lifetime;
 
@@ -51,7 +41,7 @@ namespace GameLogic
         {
             this.timeService = timeService;
             this.bonfireView = bonfireView;
-            this.timeService.TickingSubscribe(Second);
+            this.timeService.TickingEvent += Second;
             StartPosition = startPosition;
             this.maxLifetime = maxLifetime; 
             lifetime = maxLifetime;
@@ -59,13 +49,13 @@ namespace GameLogic
 
         public void Dispose()
         {
-            timeService.TickingUnsubscribe(Second);
+            timeService.TickingEvent -= Second;
         }
 
         public void AddLog(float quality)
         {
             lifetime = Mathf.Clamp(lifetime + quality, 0, maxLifetime);
-            lifetimeAction?.Invoke(lifetime);
+            LifetimeEvent?.Invoke(lifetime);
             bonfireView.BonfirePower(lifetime);
         }
 
@@ -74,13 +64,13 @@ namespace GameLogic
             lifetime -= _difficult;
             if (lifetime <= 0)
             {
-                fireGoOutAction?.Invoke();
-                endGameAction?.Invoke();
+                FireGoOutEvent?.Invoke();
+                EndGameEvent?.Invoke();
                 bonfireView.FireGoOut();
             }
             else
             {
-                lifetimeAction?.Invoke(lifetime);
+                LifetimeEvent?.Invoke(lifetime);
                 bonfireView.BonfirePower(lifetime);
             }
         }

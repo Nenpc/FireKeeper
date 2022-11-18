@@ -12,12 +12,9 @@ namespace GameView
 {
 	public interface IPlayer
 	{
-		void StaminaChangedSubscribe(Action<float> function);
-		void StaminaChangedUnsubscribe(Action<float> function);
-		void InteractObjectNearSubscribe(Action<bool> function);
-		void InteractObjectNearUnsubscribe(Action<bool> function);
-		void TakeImprovementSubscribe(Action<Improvement> function);
-		void TakeImprovementUnsubscribe(Action<Improvement> function);
+		event Action<float> StaminaChangedEvent;
+		event Action<bool> InteractObjectNearEvent;
+		event Action<Improvement> TakeImprovementEvent;
 		Transform GetTransform();
 	}
 
@@ -31,17 +28,9 @@ namespace GameView
 	[RequireComponent(typeof(CharacterController), typeof(Transform))]
 	public class Player : MonoBehaviour, IPlayer
 	{
-		private Action<float> staminaChanged;
-		public void StaminaChangedSubscribe(Action<float> function) => staminaChanged += function;
-		public void StaminaChangedUnsubscribe(Action<float> function) => staminaChanged -= function;
-
-		private Action<bool> interactObjectNear;
-		public void InteractObjectNearSubscribe(Action<bool> function) => interactObjectNear += function;
-		public void InteractObjectNearUnsubscribe(Action<bool> function) => interactObjectNear -= function;
-
-		private Action<Improvement> takeImprovement;
-		public void TakeImprovementSubscribe(Action<Improvement> function) => takeImprovement += function;
-		public void TakeImprovementUnsubscribe(Action<Improvement> function) => takeImprovement -= function;
+		public event Action<float> StaminaChangedEvent;
+		public event Action<bool> InteractObjectNearEvent;
+		public event Action<Improvement> TakeImprovementEvent;
 
 		[SerializeField] private PlayerSetting playerSetting;
 
@@ -91,9 +80,9 @@ namespace GameView
 			this.inputManager.Interaction += Interaction;
 			this.inputManager.Drop += Drop;
 
-			this.timeService.TickingSubscribe(ImprovementTimeCounter);
-			this.timeService.StopSubscribe(StopGame);
-			this.timeService.ContinueSubscribe(ContinueGame);
+			this.timeService.TickingEvent += ImprovementTimeCounter;
+			this.timeService.StopEvent += StopGame;
+			this.timeService.ContinueEvent += ContinueGame;
 
 			stamina = playerSetting.maxStamina;
 			runSpeed = playerSetting.runSpeed;
@@ -147,8 +136,9 @@ namespace GameView
 
 		private void OnDestroy()
 		{
-			timeService.StopUnsubscribe(StopGame);
-			timeService.ContinueUnsubscribe(ContinueGame);
+			timeService.TickingEvent -= ImprovementTimeCounter;
+			timeService.StopEvent -= StopGame;
+			timeService.ContinueEvent -= ContinueGame;
 
 			inputManager.GoFront -= GoFront;
 			inputManager.GoRight -= GoRight;
@@ -232,7 +222,7 @@ namespace GameView
 				ySpeed = downSpeed * Time.deltaTime;
 			}
 
-			staminaChanged?.Invoke(stamina);
+			StaminaChangedEvent?.Invoke(stamina);
 			characterController.Move(new Vector3(direction.x, ySpeed, direction.z) * Time.deltaTime);
 		}
 		
@@ -300,7 +290,7 @@ namespace GameView
 			if (nearestImprovement != null)
 			{
 				UseImprovement(nearestImprovement.Use());
-				interactObjectNear?.Invoke(false);
+				InteractObjectNearEvent?.Invoke(false);
 				nearestImprovement = null;
 			}
 		}
@@ -319,7 +309,7 @@ namespace GameView
 			bonfire.AddLog(bag.logCapacity);
 			bag.Burn();
 			bag = null;
-			interactObjectNear?.Invoke(false);
+			InteractObjectNearEvent?.Invoke(false);
 		}
 
 		private void GetLog()
@@ -327,7 +317,7 @@ namespace GameView
 			bag.transform.SetParent(logPosition);
 			bag.transform.localPosition = Vector3.zero;
 			bag.transform.localRotation = Quaternion.identity;
-			interactObjectNear?.Invoke(false);
+			InteractObjectNearEvent?.Invoke(false);
 		}
 
 		private void OnTriggerEnter(Collider other)
@@ -337,19 +327,19 @@ namespace GameView
 				if (!log.IsTake && bag == null)
 				{
 					nearestLog = log.logic;
-					interactObjectNear?.Invoke(true);
+					InteractObjectNearEvent?.Invoke(true);
 				}
 			}
 
 			if (other.gameObject.TryGetComponent(out BonfireView bonfireView))
 			{
-				interactObjectNear?.Invoke(true);
+				InteractObjectNearEvent?.Invoke(true);
 			}
 
 			if (other.gameObject.TryGetComponent(out ImprovementView improvementView))
 			{
 				nearestImprovement = improvementView.logic;
-				interactObjectNear?.Invoke(true);
+				InteractObjectNearEvent?.Invoke(true);
 			}
 		}
 
@@ -359,24 +349,24 @@ namespace GameView
 			{
 				if (bag == log.logic)
 				{
-					interactObjectNear?.Invoke(false);
+					InteractObjectNearEvent?.Invoke(false);
 				}
 				else if (nearestLog == log.logic)
 				{
 					nearestLog = null;
-					interactObjectNear?.Invoke(false);
+					InteractObjectNearEvent?.Invoke(false);
 				}
 			}
 
 			if (other.gameObject.TryGetComponent(out BonfireView bonfireView))
 			{
-				interactObjectNear?.Invoke(false);
+				InteractObjectNearEvent?.Invoke(false);
 			}
 			
 			if (other.gameObject.TryGetComponent(out ImprovementView improvementView))
 			{
 				nearestImprovement = null;
-				interactObjectNear?.Invoke(false);
+				InteractObjectNearEvent?.Invoke(false);
 			}
 		}
 
@@ -395,7 +385,7 @@ namespace GameView
 					Debug.Log("ImprovementType.SpeedUp " + improvment.Time);
 					improvementList.Add(improvment);
 					runSpeed += improvment.Capacity;
-					takeImprovement?.Invoke(improvment);
+					TakeImprovementEvent?.Invoke(improvment);
 					break;
 				case ImprovementType.StaminaRecovery:
 					Debug.Log("ImprovementType.StaminaRecovery " + improvment.Time);
@@ -406,12 +396,12 @@ namespace GameView
 					stamina = playerSetting.maxStamina;
 					staminaInfinity = true;
 					improvementList.Add(improvment);
-					takeImprovement?.Invoke(improvment);
+					TakeImprovementEvent?.Invoke(improvment);
 					break;
 				case ImprovementType.NoStorm:
 					Debug.Log("ImprovementType.NoStorm " + improvment.Time);
 					improvementList.Add(improvment);
-					takeImprovement?.Invoke(improvment);
+					TakeImprovementEvent?.Invoke(improvment);
 					break;
 			}
 		}

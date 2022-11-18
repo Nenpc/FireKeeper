@@ -11,15 +11,12 @@ namespace Managers
 
 	interface IWin
 	{
-		void WinActionSubscribe(Action<SceneName> function);
-		void WinActionUnsubscribe(Action<SceneName> function);
+		event Action<SceneName> WinEvent;
 	}
 	
 	public class ProgressManager : MonoBehaviour, IProgressManager, IWin
 	{
-		private Action<SceneName> winAction;
-		public void WinActionSubscribe(Action<SceneName> function) => winAction += function;
-		public void WinActionUnsubscribe(Action<SceneName> function) => winAction -= function;
+		public event Action<SceneName> WinEvent;
 
 		[SerializeField] private LevelAchievementSetting levelAchievement;
 		[SerializeField] private CongratulationUI congratulationUI;
@@ -35,14 +32,14 @@ namespace Managers
 		{
 			this.timeService = timeService;
 			
-			timeService.TickingSubscribe(Tick);
+			timeService.TickingEvent += Tick;
 			if (levelAchievement.achievements != null && levelAchievement.achievements.Count > 0)
 				curAchievementIndex = 0;
 		}
 
 		public void OnDestroy()
 		{
-			timeService.TickingUnsubscribe(Tick);
+			timeService.TickingEvent -= Tick;
 		}
 
 		private void Tick(int time)
@@ -63,7 +60,7 @@ namespace Managers
 			}
 			
 			if (time >= levelAchievement.winResult)
-				winAction?.Invoke(levelAchievement.nextLevelName);
+				WinEvent?.Invoke(levelAchievement.nextLevelName);
 		}
 
 		private void ShowCongratulation()

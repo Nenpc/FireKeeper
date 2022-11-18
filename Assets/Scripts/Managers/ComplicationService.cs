@@ -3,12 +3,7 @@ using UnityEngine;
 
 namespace Managers
 {
-    interface IComplicationService
-    {
-        
-    }
-    
-    public class ComplicationService : MonoBehaviour, IComplicationService
+    public class ComplicationService : MonoBehaviour
     {
         [SerializeField] private ComplicationsSetting complicationsSetting;
 
@@ -18,20 +13,19 @@ namespace Managers
         private void Construct(TimeService timeService)
         {
             this.timeService = timeService;
-            this.timeService.TickingSubscribe(CreateComplication);
+            this.timeService.TickingEvent += CreateComplication;
         }
 
         private void OnDestroy()
         {
-            timeService.TickingUnsubscribe(CreateComplication);
+            timeService.TickingEvent -= CreateComplication;
         }
 
         private void CreateComplication(int time)
         {
             if (inProgress)
                 return;
-            
-        }
 
+        }
     }
 }

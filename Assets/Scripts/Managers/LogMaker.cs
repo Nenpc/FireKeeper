@@ -31,7 +31,7 @@ namespace Managers
 			this.timeService = timeService;
 			this.bonfire = bonfire;
 
-			timeService.TickingSubscribe(TryCreateLog);
+			timeService.TickingEvent += TryCreateLog;
 
 			usedLogs = new List<Log>();
 			unusedLogs = new List<Log>();
@@ -43,7 +43,7 @@ namespace Managers
 
 		public void OnDestroy()
 		{
-			timeService.TickingUnsubscribe(TryCreateLog);
+			timeService.TickingEvent -= TryCreateLog;
 
 			usedLogs.Clear();
 			usedLogs = null;

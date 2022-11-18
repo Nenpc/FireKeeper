@@ -6,13 +6,8 @@ namespace GameUI
 {
     public class PauseMenuUI : MonoBehaviour
     {
-        private Action continueGameAction;
-        public void ContinueGameActionSubscribe(Action function) => continueGameAction += function;
-        public void ContinueGameActionUnsubscribe(Action function) => continueGameAction -= function;
-        
-        private Action mainMenuAction;
-        public void MainMenuActionSubscribe(Action function) => mainMenuAction += function;
-        public void MainMenuActionUnsubscribe(Action function) => mainMenuAction -= function;
+        public event Action ContinueGameEvent;
+        public event Action MainMenuEvent;
 
         [SerializeField] private Button continueButton;
         [SerializeField] private Button mainMenuButton;
@@ -41,12 +36,12 @@ namespace GameUI
 
         private void RestartGame()
         {
-            continueGameAction?.Invoke();
+            ContinueGameEvent?.Invoke();
         }
 
         private void MainMenu()
         {
-            mainMenuAction?.Invoke();
+            MainMenuEvent?.Invoke();
         }
     }
 }

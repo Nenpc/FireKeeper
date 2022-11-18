@@ -6,29 +6,18 @@ namespace Managers
 {
 	public interface ITimeService
 	{
-		void TickingSubscribe(Action<int> function);
-		void TickingUnsubscribe(Action<int> function);
-		void StopSubscribe(Action function);
-		void StopUnsubscribe(Action function);
-		void ContinueSubscribe(Action function);
-		void ContinueUnsubscribe(Action function);
+		event Action<int> TickingEvent;
+		event Action StopEvent;
+		event Action ContinueEvent;
 		void Stop();
 		void Continue();
 	}
 
 	public class TimeService : MonoBehaviour, ITimeService
 	{
-		private Action<int> tickingAction;
-		public void TickingSubscribe(Action<int> function) => tickingAction += function;
-		public void TickingUnsubscribe(Action<int> function) => tickingAction -= function;
-
-		private Action stopAction;
-		public void StopSubscribe(Action function) => stopAction += function;
-		public void StopUnsubscribe(Action function) => stopAction -= function;
-		
-		private Action continueAction;
-		public void ContinueSubscribe(Action function) => continueAction += function;
-		public void ContinueUnsubscribe(Action function) => continueAction -= function;
+		public event Action<int> TickingEvent;
+		public event Action StopEvent;
+		public event Action ContinueEvent;
 
 		private float gameTime;
 		private float lostTime;
@@ -50,7 +39,7 @@ namespace Managers
 				Debug.LogWarning("TimeManager manager is not running!");
 				return;
 			}
-			stopAction?.Invoke();
+			StopEvent?.Invoke();
 			active = false;
 		}
 
@@ -61,7 +50,7 @@ namespace Managers
 				Debug.LogWarning("TimeManager manager is not running!");
 				return;
 			}
-			continueAction?.Invoke();
+			ContinueEvent?.Invoke();
 			active = true;
 		}
 
@@ -73,7 +62,7 @@ namespace Managers
 			lostTime += Time.deltaTime;
 			if (lostTime >= 1)
 			{
-				tickingAction?.Invoke((int)gameTime);
+				TickingEvent?.Invoke((int)gameTime);
 				lostTime--;
 			}
 		}

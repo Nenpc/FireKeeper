@@ -13,14 +13,14 @@ namespace Managers
 	{
 		[SerializeField] private InputSetting inputSetting;
 
-		public Action<bool> GoFront;
-		public Action<bool> GoRight;
-		public Action<bool> GoLeft;
-		public Action<bool> GoBack;
-		public Action<bool> Sprint;
+		public event Action<bool> GoFront;
+		public event Action<bool> GoRight;
+		public event Action<bool> GoLeft;
+		public event Action<bool> GoBack;
+		public event Action<bool> Sprint;
 
-		public Action Interaction;
-		public Action Drop;
+		public event Action Interaction;
+		public event Action Drop;
 
 		private bool wait;
 
@@ -31,14 +31,14 @@ namespace Managers
 		{
 			this.timeService = timeService;
 			
-			timeService.StopSubscribe(StopGame);
-			timeService.ContinueSubscribe(ContinueGame);
+			timeService.StopEvent += StopGame;
+			timeService.ContinueEvent += ContinueGame;
 		}
 
 		public void OnDestroy()
 		{
-			timeService.StopUnsubscribe(StopGame);
-			timeService.ContinueUnsubscribe(ContinueGame);
+			timeService.StopEvent -= StopGame;
+			timeService.ContinueEvent -=ContinueGame;
 		}
 
 		private void StopGame()

@@ -6,13 +6,8 @@ namespace GameUI
 {
 	public class LoseGameUI : MonoBehaviour
 	{
-		private Action restartGameAction;
-		public void RestartGameActionSubscribe(Action function) => restartGameAction += function;
-		public void RestartGameActionUnsubscribe(Action function) => restartGameAction -= function;
-		
-		private Action mainMenuAction;
-		public void MainMenuActionSubscribe(Action function) => mainMenuAction += function;
-		public void MainMenuActionUnsubscribe(Action function) => mainMenuAction -= function;
+		public event Action RestartGameEvent;
+		public event Action MainMenuEvent;
 
 		[SerializeField] private Button restart;
 
@@ -38,12 +33,12 @@ namespace GameUI
 
 		private void RestartGame()
 		{
-			restartGameAction?.Invoke();
+			RestartGameEvent?.Invoke();
 		}
 		
 		private void MainMenu()
 		{
-			mainMenuAction?.Invoke();
+			MainMenuEvent?.Invoke();
 		}
 	}
 }
