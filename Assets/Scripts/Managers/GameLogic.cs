@@ -1,5 +1,4 @@
 using GameLogic;
-using GameUI;
 using GameView;
 using UnityEngine;
 using Zenject;
@@ -9,37 +8,56 @@ namespace Managers
 	public class GameLogic : MonoBehaviour
 	{
 		[SerializeField] private DifficultSetting difficultSetting;
-		[SerializeField] private EndGameUI endGame;
 		[SerializeField] private CameraPosition cameraPosition;
+		
+		[Space]
+		[SerializeField] private Player playerPrefab;
+		[SerializeField] private Transform playerStartPosition;
+		[SerializeField] private BonfireView bonfireViewPrefab;
+		[SerializeField] private Transform bonfireStartPosition;
 
-		private Bonfire bonfireLogic;
-		private TimeManager timeManager;
+		private IBonfire bonfire;
+		private ITimeService timeService;
+		private IGameUI gameUI;
+		private IWin win;
 
 		[Inject]
-		private void Construct(TimeManager timeManager, Bonfire bonfire)
+		private void Construct(ITimeService timeService, IWin win, IBonfire bonfire, IGameUI gameUI)
 		{
-			this.timeManager = timeManager;
-			this.bonfireLogic = bonfire;
-
+			this.timeService = timeService;
+			this.bonfire = bonfire;
+			this.gameUI = gameUI;
+			this.win = win;
+			
 			//if (!cameraPosition.Initialize())
 			//	return false;
 
-			this.bonfireLogic.FireGoOut += EndGame;
-			endGame.RestartGameAction += RestartGame;
+			this.bonfire.FireGoOutSubscribe(EndGame);
+			this.gameUI.RestartSubscribe(RestartGame);
+			this.gameUI.ContinueSubscribe(RestartGame);
 
-			timeManager.Continue();
+			this.timeService.Continue();
+			
+			this.win.WinActionSubscribe(WinGame);
 		}
 
 		private void OnDestroy()
 		{
-			this.bonfireLogic.FireGoOut -= EndGame;
-			endGame.RestartGameAction -= RestartGame;
+			bonfire.FireGoOutUnsubscribe(EndGame);
+			gameUI.RestartUnsubscribe(RestartGame);
+			gameUI.ContinueUnsubscribe(RestartGame);
 		}
 
 		private void EndGame()
 		{
-			timeManager.Stop();
-			endGame.ShowScreen();
+			timeService.Stop();
+			gameUI.ShowLosePanel();
+		}
+
+		private void WinGame(SceneName sceneName)
+		{
+			timeService.Stop();
+			gameUI.ShowWinPanel(sceneName.ToString());
 		}
 
 		private void RestartGame()

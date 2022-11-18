@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2dc510da7b41c548b5d65a28bae449a, type: 3}
-  m_Name: AchievementSetting
+  m_Script: {fileID: 11500000, guid: f02f2cfa44fe4a33bbf68bc7c0c1ece0, type: 3}
+  m_Name: ComplicationsSetting
   m_EditorClassIdentifier: 
-  achievements:
-  - needScore: 50
-    CongratulationsText: Good start!
-  - needScore: 150
-    CongratulationsText: Excellent!
-  - needScore: 300
-    CongratulationsText: You win!
+  ComplicationSettings:
+  - complicationType: 0
+    duration: 15
+    probability: 0.1
+  - complicationType: 1
+    duration: 20
+    probability: 0.01

@@ -7,7 +7,7 @@ namespace GameView.Comon
 {
     public class BootstrapInstaller : MonoInstaller
     {
-        [SerializeField] private SceneManager sceneManagerPrefab;
+        [SerializeField] private SceneSwitcher sceneSwitcherPrefab;
         [SerializeField] private SoundManager soundManagerPrefab;
         [SerializeField] private LogerManager logerManagerPrefab;
         [SerializeField] private AlertSystem alertSystemPrefab;
@@ -23,10 +23,10 @@ namespace GameView.Comon
                 .AsSingle()
                 .NonLazy();
             
-            SceneManager sceneManager = Container.InstantiatePrefabForComponent<SceneManager>(sceneManagerPrefab);
+            SceneSwitcher sceneSwitcher = Container.InstantiatePrefabForComponent<SceneSwitcher>(sceneSwitcherPrefab);
             Container
-                .Bind<SceneManager>()
-                .FromInstance(sceneManager)
+                .Bind<SceneSwitcher>()
+                .FromInstance(sceneSwitcher)
                 .AsSingle()
                 .NonLazy();
             

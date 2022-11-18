@@ -7,15 +7,13 @@ namespace GameView.Comon
 {
     public class LocationInstaller : MonoInstaller
     {
-        [SerializeField] private UIManager uiManager;
-        [SerializeField] private LogManager logManager;
-        [SerializeField] private ImprovementManager improvementManager;
+        [SerializeField] private Managers.GameUI gameUI;
+        [SerializeField] private LogMaker logMaker;
+        [SerializeField] private ImprovementMaker improvementMaker;
         [SerializeField] private Managers.GameLogic gameLogic;
-        
-        [Space]
-        [SerializeField] private TimeManager timeManagerPrefab;
-        [SerializeField] private ProgressManager progressManagerPrefab;
-        [SerializeField] private InputManager inputManagerPrefab;
+        [SerializeField] private TimeService timeService;
+        [SerializeField] private ProgressManager progressManager;
+        [SerializeField] private InputManager inputManager;
         
         [Space]
         [SerializeField] private Player playerPrefab;
@@ -25,74 +23,68 @@ namespace GameView.Comon
         
         public override void InstallBindings()
         {
-            InstantiateWithBind();
-            OnlyBind();
+            ManagerBind();
+            CreateAndBindMainObject();
         }
 
-        private void InstantiateWithBind()
+        private void CreateAndBindMainObject()
         {
-            TimeManager timeManager = Container.InstantiatePrefabForComponent<TimeManager>(timeManagerPrefab);
+            BonfireView bonfireView = Instantiate(bonfireViewPrefab, bonfireStartPosition.position,Quaternion.identity);
+            
+            Bonfire bonfire = new Bonfire(1, 100, timeService, bonfireStartPosition.position, bonfireView);
             Container
-                .Bind<TimeManager>()
-                .FromInstance(timeManager)
+                .Bind<IBonfire>()
+                .FromInstance(bonfire)
                 .AsSingle()
                 .NonLazy();
             
-            ProgressManager progressManager = Container.InstantiatePrefabForComponent<ProgressManager>(progressManagerPrefab);
-            Container
-                .Bind<ProgressManager>()
-                .FromInstance(progressManager)
-                .AsSingle()
-                .NonLazy();
-
-            InputManager inputManager = Container.InstantiatePrefabForComponent<InputManager>(inputManagerPrefab);
-            Container
-                .Bind<InputManager>()
-                .FromInstance(inputManager)
-                .AsSingle()
-                .NonLazy();
-
             Player player = Container.InstantiatePrefabForComponent<Player>(
                 playerPrefab, 
                 playerStartPosition.position,
                 Quaternion.identity, 
                 null);
             Container
-                .Bind<Player>()
+                .Bind<IPlayer>()
                 .FromInstance(player)
-                .AsSingle()
-                .NonLazy();
-
-            Bonfire bonfire = new Bonfire(1, 100, timeManager);
-            Container
-                .Bind<Bonfire>()
-                .FromInstance(bonfire)
-                .AsSingle()
-                .NonLazy();
-            
-            BonfireView bonfireView = Container.InstantiatePrefabForComponent<BonfireView>(
-                bonfireViewPrefab, 
-                bonfireStartPosition.position,
-                Quaternion.identity, 
-                null);
-            Container
-                .Bind< BonfireView>()
-                .FromInstance(bonfireView)
                 .AsSingle()
                 .NonLazy();
         }
 
-        private void OnlyBind()
+        private void ManagerBind()
         {
             Container
-                .Bind<LogManager>()
-                .FromInstance(logManager)
+                .Bind<ITimeService>()
+                .FromInstance(timeService)
                 .AsSingle()
                 .NonLazy();
             
             Container
-                .Bind<ImprovementManager>()
-                .FromInstance(improvementManager)
+                .Bind<IProgressManager>()
+                .FromInstance(progressManager)
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .Bind<IWin>()
+                .FromInstance(progressManager)
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind<InputManager>()
+                .FromInstance(inputManager)
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .Bind<ILogMaker>()
+                .FromInstance(logMaker)
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .Bind<ImprovementMaker>()
+                .FromInstance(improvementMaker)
                 .AsSingle()
                 .NonLazy();
                         
@@ -103,8 +95,8 @@ namespace GameView.Comon
                 .NonLazy();
             
             Container
-                .Bind<UIManager>()
-                .FromInstance(uiManager)
+                .Bind<IGameUI>()
+                .FromInstance(gameUI)
                 .AsSingle()
                 .NonLazy();
         }

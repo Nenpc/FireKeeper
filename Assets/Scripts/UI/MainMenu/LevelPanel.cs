@@ -16,12 +16,12 @@ namespace MainMenu
 
         private SceneSetting selectedScene;
         
-        private SceneManager sceneManager;
+        private SceneSwitcher sceneSwitcher;
 
         [Inject]
-        private void Construct(SceneManager sceneManager)
+        private void Construct(SceneSwitcher sceneSwitcher)
         {
-            this.sceneManager = sceneManager;
+            this.sceneSwitcher = sceneSwitcher;
         }
 
         private void Awake()
@@ -42,7 +42,7 @@ namespace MainMenu
         private void StartLevel()
         {
             if (selectedScene != null)
-                sceneManager.LoadScene(selectedScene.sceneName);
+                sceneSwitcher.LoadScene(selectedScene.sceneName);
         }
 
         private void SelectedScene(SceneSetting sceneSetting)

@@ -3,7 +3,7 @@ using Zenject;
 
 namespace Managers
 {
-	public class SceneManager : MonoBehaviour
+	public class SceneSwitcher : MonoBehaviour
 	{
 		[SerializeField] private SceneManagerSetting sceneManagerSetting;
 
@@ -41,7 +41,7 @@ namespace Managers
 
 		public string ManagerName()
 		{
-			return "Scene manager";
+			return "Scene switcher";
 		}
 	}
 }

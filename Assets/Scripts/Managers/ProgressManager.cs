@@ -1,57 +1,74 @@
+using System;
 using GameUI;
 using UnityEngine;
 using Zenject;
 
 namespace Managers
 {
-	public class ProgressManager : MonoBehaviour
+	interface IProgressManager
 	{
-		[SerializeField] private AchievementSetting achievement;
+	}
+
+	interface IWin
+	{
+		void WinActionSubscribe(Action<SceneName> function);
+		void WinActionUnsubscribe(Action<SceneName> function);
+	}
+	
+	public class ProgressManager : MonoBehaviour, IProgressManager, IWin
+	{
+		private Action<SceneName> winAction;
+		public void WinActionSubscribe(Action<SceneName> function) => winAction += function;
+		public void WinActionUnsubscribe(Action<SceneName> function) => winAction -= function;
+
+		[SerializeField] private LevelAchievementSetting levelAchievement;
 		[SerializeField] private CongratulationUI congratulationUI;
 		[SerializeField] private ScoreUI scoreUI;
 
 		private int curScore;
-		private TimeManager timeManager;
+		private ITimeService timeService;
 
-		// ���� (curAchievementIndex == -1) ������ ���� ��� ������ � ������ ���� �� ��� ��������
 		private int curAchievementIndex = -1;
 
 		[Inject]
-		private void Construct(TimeManager timeManager)
+		private void Construct(ITimeService timeService)
 		{
-			this.timeManager = timeManager;
+			this.timeService = timeService;
 			
-			timeManager.Tiking += Tick;
-			if (achievement.achievements != null && achievement.achievements.Count > 0)
+			timeService.TickingSubscribe(Tick);
+			if (levelAchievement.achievements != null && levelAchievement.achievements.Count > 0)
 				curAchievementIndex = 0;
 		}
 
-		public void Ondestroy()
+		public void OnDestroy()
 		{
-			timeManager.Tiking -= Tick;
+			timeService.TickingUnsubscribe(Tick);
 		}
 
-		public void Tick(int time)
+		private void Tick(int time)
 		{
 			scoreUI.ShowScore(time);
 
 			if (curAchievementIndex == -1)
 				return;
 
-			if (time == achievement.achievements[curAchievementIndex].needScore)
+			if (time == levelAchievement.achievements[curAchievementIndex].needScore)
 			{
 				ShowCongratulation();
 
-				if (achievement.achievements.Count - 1 > curAchievementIndex)
+				if (levelAchievement.achievements.Count - 1 > curAchievementIndex)
 					curAchievementIndex++;
 				else
 					curAchievementIndex = -1;
 			}
+			
+			if (time >= levelAchievement.winResult)
+				winAction?.Invoke(levelAchievement.nextLevelName);
 		}
 
 		private void ShowCongratulation()
 		{
-			congratulationUI.ShowPanel(achievement.achievements[curAchievementIndex].CongratulationsText);
+			congratulationUI.ShowPanel(levelAchievement.achievements[curAchievementIndex].CongratulationsText);
 		}
 	}
 }

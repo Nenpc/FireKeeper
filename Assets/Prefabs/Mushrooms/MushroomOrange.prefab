@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7839192556984972110}
   - component: {fileID: -7190872264719734718}
   - component: {fileID: 5361434460271034365}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MushroomOrange
   m_TagString: Untagged
   m_Icon: {fileID: 0}

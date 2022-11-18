@@ -5,23 +5,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using Improvement = GameLogic.Improvement;
+using Log = GameLogic.Log;
 
 namespace GameView
 {
+	public interface IPlayer
+	{
+		void StaminaChangedSubscribe(Action<float> function);
+		void StaminaChangedUnsubscribe(Action<float> function);
+		void InteractObjectNearSubscribe(Action<bool> function);
+		void InteractObjectNearUnsubscribe(Action<bool> function);
+		void TakeImprovementSubscribe(Action<Improvement> function);
+		void TakeImprovementUnsubscribe(Action<Improvement> function);
+		Transform GetTransform();
+	}
+
 	public enum PlayerAnimation
 	{
 		Run,
-		Jump,
 		Sprint,
 		Gathering
 	}
 
 	[RequireComponent(typeof(CharacterController), typeof(Transform))]
-	public class Player : MonoBehaviour
+	public class Player : MonoBehaviour, IPlayer
 	{
-		public Action<float> staminaChanged;
-		public Action<bool> interactObjectNear;
-		public Action<Improvement> takeImprovment;
+		private Action<float> staminaChanged;
+		public void StaminaChangedSubscribe(Action<float> function) => staminaChanged += function;
+		public void StaminaChangedUnsubscribe(Action<float> function) => staminaChanged -= function;
+
+		private Action<bool> interactObjectNear;
+		public void InteractObjectNearSubscribe(Action<bool> function) => interactObjectNear += function;
+		public void InteractObjectNearUnsubscribe(Action<bool> function) => interactObjectNear -= function;
+
+		private Action<Improvement> takeImprovement;
+		public void TakeImprovementSubscribe(Action<Improvement> function) => takeImprovement += function;
+		public void TakeImprovementUnsubscribe(Action<Improvement> function) => takeImprovement -= function;
 
 		[SerializeField] private PlayerSetting playerSetting;
 
@@ -37,8 +57,9 @@ namespace GameView
 		private Log nearestLog;
 
 		private Improvement nearestImprovement;
-
-		private Bonfire bonfire;
+		private InputManager inputManager;
+		private ITimeService timeService;
+		private IBonfire bonfire;
 		
 		private readonly float maxWaitRestoreStaminaTime = 1.5f;
 		private float waitRestoreTime;
@@ -53,15 +74,14 @@ namespace GameView
 
 		private float runSpeed;
 		private float walkSpeed;
-
-		private InputManager inputManager;
-		private TimeManager timeManager;
+		
+		public Transform GetTransform() => transform;
 
 		[Inject]
-		private void Construct(InputManager inputManager, TimeManager timeManager)
+		private void Construct(InputManager inputManager, ITimeService timeService, IBonfire bonfire)
 		{
 			this.inputManager = inputManager;
-			this.timeManager = timeManager;
+			this.timeService = timeService;
 
 			this.inputManager.GoFront += GoFront;
 			this.inputManager.GoRight += GoRight;
@@ -71,13 +91,15 @@ namespace GameView
 			this.inputManager.Interaction += Interaction;
 			this.inputManager.Drop += Drop;
 
-			this.timeManager.Tiking += ImprovementTimeCounter;
-			this.timeManager.StopAction += StopGame;
-			this.timeManager.ContinueAction += ContinueGame;
+			this.timeService.TickingSubscribe(ImprovementTimeCounter);
+			this.timeService.StopSubscribe(StopGame);
+			this.timeService.ContinueSubscribe(ContinueGame);
 
 			stamina = playerSetting.maxStamina;
 			runSpeed = playerSetting.runSpeed;
 			walkSpeed = playerSetting.walkSpeed;
+
+			this.bonfire = bonfire;
 		}
 
 		#region InputMethodValue
@@ -125,8 +147,8 @@ namespace GameView
 
 		private void OnDestroy()
 		{
-			timeManager.StopAction -= StopGame;
-			timeManager.ContinueAction -= ContinueGame;
+			timeService.StopUnsubscribe(StopGame);
+			timeService.ContinueUnsubscribe(ContinueGame);
 
 			inputManager.GoFront -= GoFront;
 			inputManager.GoRight -= GoRight;
@@ -213,7 +235,7 @@ namespace GameView
 			staminaChanged?.Invoke(stamina);
 			characterController.Move(new Vector3(direction.x, ySpeed, direction.z) * Time.deltaTime);
 		}
-
+		
 		private void RestoreStamina()
 		{
 			if (waitRestoreTime <= 0)
@@ -321,7 +343,6 @@ namespace GameView
 
 			if (other.gameObject.TryGetComponent(out BonfireView bonfireView))
 			{
-				bonfire = bonfireView.bonfireLogic;
 				interactObjectNear?.Invoke(true);
 			}
 
@@ -349,7 +370,6 @@ namespace GameView
 
 			if (other.gameObject.TryGetComponent(out BonfireView bonfireView))
 			{
-				bonfire = null;
 				interactObjectNear?.Invoke(false);
 			}
 			
@@ -375,7 +395,7 @@ namespace GameView
 					Debug.Log("ImprovementType.SpeedUp " + improvment.Time);
 					improvementList.Add(improvment);
 					runSpeed += improvment.Capacity;
-					takeImprovment?.Invoke(improvment);
+					takeImprovement?.Invoke(improvment);
 					break;
 				case ImprovementType.StaminaRecovery:
 					Debug.Log("ImprovementType.StaminaRecovery " + improvment.Time);
@@ -386,12 +406,12 @@ namespace GameView
 					stamina = playerSetting.maxStamina;
 					staminaInfinity = true;
 					improvementList.Add(improvment);
-					takeImprovment?.Invoke(improvment);
+					takeImprovement?.Invoke(improvment);
 					break;
 				case ImprovementType.NoStorm:
 					Debug.Log("ImprovementType.NoStorm " + improvment.Time);
 					improvementList.Add(improvment);
-					takeImprovment?.Invoke(improvment);
+					takeImprovement?.Invoke(improvment);
 					break;
 			}
 		}

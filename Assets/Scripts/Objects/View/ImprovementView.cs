@@ -6,7 +6,7 @@ using System;
 namespace GameView
 {
 	[RequireComponent(typeof(Rigidbody))]
-	public class ImprovementView : MonoBehaviour, IDisposable
+	public sealed class ImprovementView : MonoBehaviour, IDisposable
 	{
 		private Rigidbody _rigidbody;
 		public Rigidbody Rigidbody
@@ -16,7 +16,7 @@ namespace GameView
 
 		public Improvement logic { get; private set; }
 
-		public void Initialize(Improvement log, Vector3 position)
+		public void Construct(Improvement log, Vector3 position)
 		{
 			logic = log;
 			logic.AddView(this);

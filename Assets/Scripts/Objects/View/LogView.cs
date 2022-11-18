@@ -17,7 +17,7 @@ namespace GameView
 
 		public bool IsTake => logic.IsTake;
 
-		public void Initialize(Log log, Vector3 position)
+		public void Construct(Log log, Vector3 position)
 		{
 			logic = log;
 			logic.AddView(this);

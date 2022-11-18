@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 813d9d5f00e849188d5ed16d3c08f389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneManagerPrefab: {fileID: 2302941358779339491, guid: 5bd17f5d4828b0148bc628ddc53b6190, type: 3}
+  sceneSwitcherPrefab: {fileID: 2302941358779339491, guid: 5bd17f5d4828b0148bc628ddc53b6190, type: 3}
   soundManagerPrefab: {fileID: 450084056589322850, guid: 018b938b78272574b867092b018e4cf2, type: 3}
   logerManagerPrefab: {fileID: 7423160333047495762, guid: 19afa33b16c97e54ba332db4ba0117d6, type: 3}
   alertSystemPrefab: {fileID: 2443210066676228755, guid: fd1a640de5448be40819a678600a71ac, type: 3}

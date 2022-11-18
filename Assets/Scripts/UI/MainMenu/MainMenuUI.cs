@@ -14,13 +14,13 @@ namespace MainMenu
 		[SerializeField] private GameObject leaderboardPanel;
 		[SerializeField] private LevelPanel levelPanel;
 
-		private SceneManager sceneManager;
+		private SceneSwitcher sceneSwitcher;
 		private AlertSystem alertSystem;
 
 		[Inject]
-		private void Construct(SceneManager sceneManager, AlertSystem alertSystem)
+		private void Construct(SceneSwitcher sceneSwitcher, AlertSystem alertSystem)
 		{
-			this.sceneManager = sceneManager;
+			this.sceneSwitcher = sceneSwitcher;
 			this.alertSystem = alertSystem;
 		}
 

@@ -1,3 +1,4 @@
+using GameLogic;
 using GameView;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,29 +11,31 @@ namespace GameUI
         [SerializeField] private Image arrow;
         [SerializeField] private int hideDistance = 10;
 
-        private Player player;
-        private BonfireView bonefire;
+        private IPlayer player;
+        private IBonfire bonfire;
         
         private int size;
 
         [Inject]
-        private void Construct(Player player, BonfireView bonefire)
+        private void Construct(IPlayer player, IBonfire bonfire)
         {
             this.player = player;
-            this.bonefire = bonefire;
+            this.bonfire = bonfire;
             
             size = (int)(GetComponent<RectTransform>().sizeDelta.x * 0.5f);
         }
 
         void Update()
         {
-            if (Vector3.Distance(bonefire.transform.position, player.transform.position) > hideDistance)
+            var bonfirePosition = bonfire.GetStartPosition();
+            var playerPosition = player.GetTransform().position;
+            if (Vector3.Distance(bonfirePosition, playerPosition) > hideDistance)
             {
                 arrow.gameObject.SetActive(true);
-                Vector3 targetDir = bonefire.transform.position - player.transform.position;
+                Vector3 targetDir = bonfirePosition - playerPosition;
 
                 var arrowRotation = Vector3.Angle(Vector3.forward, targetDir);
-                if (player.transform.position.x > bonefire.transform.position.x)
+                if (playerPosition.x > bonfirePosition.x)
                     arrowRotation = 360 - arrowRotation;
                     
                 arrow.rectTransform.rotation = Quaternion.Euler(0, 0, -arrowRotation);

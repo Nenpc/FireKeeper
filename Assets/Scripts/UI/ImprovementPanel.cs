@@ -1,38 +1,36 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using GameLogic;
 using GameView;
 using Managers;
 using UnityEngine;
 using Zenject;
+using Improvement = GameLogic.Improvement;
 
 namespace GameUI
 {
-    public class ImprovmentPanel : MonoBehaviour
+    public class ImprovementPanel : MonoBehaviour
     {
         [SerializeField] private ImprovementSettings improvementSettings;
 
         private List<ImprovementIcon> improvementIcons;
 
-        private Player player;
-        private TimeManager timeManager;
+        private IPlayer player;
+        private ITimeService timeService;
 
         [Inject]
-        private void Construct(Player player, TimeManager timeManager)
+        private void Construct(IPlayer player, ITimeService timeService)
         {
             this.player = player;
-            this.timeManager = timeManager;
+            this.timeService = timeService;
             
-            timeManager.Tiking += TimeTick;
-            player.takeImprovment += AddImprovement;
+            timeService.TickingSubscribe(TimeTick);
+            player.TakeImprovementSubscribe(AddImprovement);
             improvementIcons = new List<ImprovementIcon>();
         }
 
         private void OnDestroy()
         {
-            timeManager.Tiking -= TimeTick;
-            player.takeImprovment -= AddImprovement;
+            timeService.TickingUnsubscribe(TimeTick);
+            player.TakeImprovementUnsubscribe(AddImprovement);
             improvementIcons = null;
         }
 

@@ -1,5 +1,3 @@
-using System;
-using GameLogic;
 using UnityEngine;
 using Zenject;
 
@@ -16,23 +14,13 @@ namespace GameView
 
 		[SerializeField] private BonfireSetting setting;
 
-		public Bonfire bonfireLogic;
-
 		[Inject]
-		private void Construct(Bonfire bonfireLogic)
+		private void Construct()
 		{
-			this.bonfireLogic = bonfireLogic;
-		}
-
-		public void Awake()
-		{
-			bonfireLogic.FireGoOut += FireGoOut;
-			bonfireLogic.Lifetime += SetBonfireView;
-
 			sound.clip = setting.FireSound;
 			sound.Play();
 
-			SetBonfireView(1);
+			BonfirePower(1);
 
 			spark.Play();
 			smoke.Play();
@@ -41,7 +29,7 @@ namespace GameView
 			light.gameObject.SetActive(true);
 		}
 
-		public void SetBonfireView(float value)
+		public void BonfirePower(float value)
 		{
 			value *= 0.01f;
 			spark.startSize = setting.SparkStartSize * value;
@@ -66,7 +54,7 @@ namespace GameView
 			sound.volume = value;
 		}
 
-		private void FireGoOut()
+		public void FireGoOut()
 		{
 			sound.Stop();
 
@@ -74,12 +62,6 @@ namespace GameView
 			smoke.Stop();
 			fire.Stop();
 			light.gameObject.SetActive(false);
-		}
-
-		public void OnDestroy()
-		{
-			bonfireLogic.FireGoOut -= FireGoOut;
-			bonfireLogic.Lifetime -= SetBonfireView;
 		}
 	}
 }

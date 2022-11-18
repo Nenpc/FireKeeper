@@ -4,7 +4,12 @@ using Zenject;
 
 namespace Managers
 {
-	public class InputManager : MonoBehaviour
+	interface IInputManager
+	{
+		
+	}
+	
+	public class InputManager : MonoBehaviour, IInputManager
 	{
 		[SerializeField] private InputSetting inputSetting;
 
@@ -19,21 +24,21 @@ namespace Managers
 
 		private bool wait;
 
-		private TimeManager timeManager;
+		private ITimeService timeService;
 		
 		[Inject]
-		private void Construct(TimeManager timeManager)
+		private void Construct(ITimeService timeService)
 		{
-			this.timeManager = timeManager;
+			this.timeService = timeService;
 			
-			timeManager.StopAction += StopGame;
-			timeManager.ContinueAction += ContinueGame;
+			timeService.StopSubscribe(StopGame);
+			timeService.ContinueSubscribe(ContinueGame);
 		}
 
 		public void OnDestroy()
 		{
-			timeManager.StopAction -= StopGame;
-			timeManager.ContinueAction -= ContinueGame;
+			timeService.StopUnsubscribe(StopGame);
+			timeService.ContinueUnsubscribe(ContinueGame);
 		}
 
 		private void StopGame()
