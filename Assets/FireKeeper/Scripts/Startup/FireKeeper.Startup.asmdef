@@ -1,0 +1,23 @@
+{
+    "name": "TerraRelife.Startup",
+    "rootNamespace": "",
+    "references": [
+        "Zenject",
+        "Unity.TextMeshPro",
+        "UniTask",
+        "UniTask.Linq",
+        "UniTask.DOTween",
+        "GameLib.Window",
+        "Core.Engine",
+        "Config"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

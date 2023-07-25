@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d615fec9d5c49c9b4b0b4468572bfef, type: 3}
+  m_Name: FuelConfig
+  m_EditorClassIdentifier: 
+  _definitions:
+  - _id: Small
+    _power: 15
+    _slowdown: 0.1
+    _fuelPrefab:
+      m_AssetGUID: c882fd9ebd164c24a9a8f54b022ccdc2
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - _id: Middle
+    _power: 35
+    _slowdown: 0.2
+    _fuelPrefab:
+      m_AssetGUID: 01fe470870d2852499653731c8ed0d19
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - _id: Big
+    _power: 75
+    _slowdown: 0.3
+    _fuelPrefab:
+      m_AssetGUID: 86265cec147e17f428a3ac2b44051c31
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
