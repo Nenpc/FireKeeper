@@ -18,8 +18,9 @@ namespace  FireKeeper.Core.Engine
         private void BindMain()
         {
             Container.BindInterfacesTo<AssetPropsLoader>().AsSingle();
-            Container.BindInterfacesTo<WinController>().AsSingle();
+            Container.BindInterfacesTo<ProgressController>().AsSingle();
             Container.BindInterfacesTo<PlayerController>().AsSingle();
+            Container.BindInterfacesTo<BonfireController>().AsSingle();
             Container.BindInterfacesTo<PlayerFactory>().AsSingle();
             Container.BindInterfacesTo<BonfireFactory>().AsSingle();
             Container.BindInterfacesTo<CoreTimeController>().AsSingle();

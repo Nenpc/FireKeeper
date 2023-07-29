@@ -19,8 +19,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    _startFuel: 0
-    _startBonus: 0
+    _startFuel: 10
+    _startBonus: 20
     _startEnemy: 7
     _maxFuel: 25
     _maxBonus: 10

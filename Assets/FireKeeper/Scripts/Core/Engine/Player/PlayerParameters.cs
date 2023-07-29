@@ -30,9 +30,9 @@ namespace FireKeeper.Core.Engine
                 _currentStamina = _maxStamina;
         }
 
-        public void ChangeStamina(float amount)
+        public void ChangeStamina(int amount)
         {
-            _currentStamina = Mathf.Max(0, _currentStamina - amount);
+            _currentStamina = Mathf.Max(0, _currentStamina + amount);
         }
 
         public float GetStepSpeed()

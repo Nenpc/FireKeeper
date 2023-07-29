@@ -15,5 +15,6 @@ MonoBehaviour:
   _iconKey: SlowEffectIcon
   _time: 15
   _infinityTime: 0
+  _isGoodEffect: 0
   _id: Slow
   _power: 2

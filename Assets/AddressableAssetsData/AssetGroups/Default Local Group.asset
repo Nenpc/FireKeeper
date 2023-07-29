@@ -26,7 +26,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: de84b7ce8f25a524d92e5956bfcbb400
-    m_Address: Mushroom
+    m_Address: MushroomBrown
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 01fe470870d2852499653731c8ed0d19
@@ -79,6 +79,14 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: e181f09713e0c684cb14c154d0366763
     m_Address: RunEffectIcon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: bdc4c77c1520e464d9a5b679ee9babf9
+    m_Address: MushroomGreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 353e2a07346823f40b42ecb3272c2044
+    m_Address: DefeatPopupView
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

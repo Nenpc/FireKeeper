@@ -13,11 +13,17 @@ MonoBehaviour:
   m_Name: BonusConfig
   m_EditorClassIdentifier: 
   _definitions:
-  - _id: Small
-    _time: 10
+  - _id: FastRun
     _bonusPrefab:
       m_AssetGUID: de84b7ce8f25a524d92e5956bfcbb400
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    _effectAbstract: {fileID: 11400000, guid: c0156cc64c0ef2c499c71cc8aeb37b5c, type: 2}
+    _effect: {fileID: 11400000, guid: c0156cc64c0ef2c499c71cc8aeb37b5c, type: 2}
+  - _id: StaminaRestore
+    _bonusPrefab:
+      m_AssetGUID: bdc4c77c1520e464d9a5b679ee9babf9
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    _effect: {fileID: 11400000, guid: 4f5720bf73a7d63428a15dba6e0d222e, type: 2}

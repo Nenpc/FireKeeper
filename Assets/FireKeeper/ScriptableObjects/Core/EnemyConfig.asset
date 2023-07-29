@@ -14,22 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _definitions:
   - _id: Slow
-    _speed: 2
     _chaseRange: 15
-    _attackDistance: 0.7
+    _attackRange: 0.2
     _enemyPrefab:
       m_AssetGUID: 93bc0e763b10e01429395cb9956a0ffd
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    _effectAbstract: {fileID: 11400000, guid: ee2a900c1aafe8d42a948d3cee3e0dca, type: 2}
+    _effectDefinition: {fileID: 11400000, guid: ee2a900c1aafe8d42a948d3cee3e0dca, type: 2}
+    _movementDefinition: {fileID: 11400000, guid: 50c38ec6cca4c0c4885df6d473e4b390, type: 2}
   - _id: StaminaDamage
-    _speed: 2
     _chaseRange: 15
-    _attackDistance: 0.7
+    _attackRange: 0.2
     _enemyPrefab:
       m_AssetGUID: a9952a96651affc499ada01f28918af2
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    _effectAbstract: {fileID: 11400000, guid: abfa81a829133cf4cb8b4588cbe03643, type: 2}
+    _effectDefinition: {fileID: 11400000, guid: abfa81a829133cf4cb8b4588cbe03643, type: 2}
+    _movementDefinition: {fileID: 11400000, guid: 2fecacaa635a2854fb630474aba762d8, type: 2}

@@ -7,12 +7,14 @@ namespace FireKeeper.Core.Engine
     public sealed class BonfireFactory : IBonfireFactory
     {
         private readonly IBonfireConfig _bonfireConfig;
+        private readonly IBonfireController _bonfireController;
         
         private BonfireView _bonfireView;
 
-        public BonfireFactory(IBonfireConfig bonfireConfig)
+        public BonfireFactory(IBonfireConfig bonfireConfig, IBonfireController bonfireController)
         {
             _bonfireConfig = bonfireConfig;
+            _bonfireController = bonfireController;
         }
 
         public async UniTask<BonfireView> CreateBonfireAsync(Vector3 position)
@@ -33,7 +35,10 @@ namespace FireKeeper.Core.Engine
         {
             var bonfireGo = await bonfireDefinition.BonfirePrefab.InstantiateAsync(position, Quaternion.identity);
             var bonfireView = bonfireGo.GetComponent<BonfireView>();
-            bonfireView.Initialize(bonfireDefinition);
+
+            _bonfireController.UpdateView(bonfireView);
+            bonfireView.Initialize(_bonfireController);
+            bonfireView.Start();
             
             return bonfireView;
         }

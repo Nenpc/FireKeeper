@@ -53,7 +53,7 @@ namespace GameLib.Window
                 {
                     if (_windowDefinitions[i] == _windowDefinitions[j])
                     {
-                        Debug.LogError("Parameters 1 and 2 have the same id!");
+                        Debug.LogError($"Parameters {i} and {j} have the same id!");
                     }
                 }
             }

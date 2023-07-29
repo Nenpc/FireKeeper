@@ -21,8 +21,9 @@ namespace FireKeeper.Core.UserInterface
             Container.BindInterfacesTo<CoreHudController>().AsSingle();
             Container.BindInterfacesTo<MenuPopupController>().AsSingle();
             Container.BindInterfacesTo<WinPopupController>().AsSingle();
+            Container.BindInterfacesTo<DefeatPopupController>().AsSingle();
             
-            Container.BindInterfacesTo<WinProvider>().AsSingle();
+            Container.BindInterfacesTo<ResultProvider>().AsSingle();
         }
     }
 }

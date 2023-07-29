@@ -52,8 +52,13 @@ namespace FireKeeper.Core.Engine
             var pool = GetPool(bonusDefinition.Id);
             var bonusView = await pool.Get(bonusDefinition.BonusPrefab, position);
             
-            bonusView.Initialize(bonusDefinition);
+            var bonusController = new BonusController(
+                bonusDefinition, 
+                this,
+                bonusView);
             
+            bonusView.Initialize(bonusController);
+
             OnCreate?.Invoke(bonusView);
             
             return bonusView;
@@ -63,7 +68,7 @@ namespace FireKeeper.Core.Engine
         {
             OnDestroy?.Invoke(bonusView);
             
-            var pool = GetPool(bonusView.BonusDefinition.Id);
+            var pool = GetPool(bonusView.BonusController.Definition.Id);
             pool.Return(bonusView);
         }
         

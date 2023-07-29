@@ -1,15 +1,22 @@
-﻿using FireKeeper.Config;
+﻿using System;
 using UnityEngine;
 
 namespace FireKeeper.Core.Engine
 {
     public sealed class BonusView : MonoBehaviour
     {
-        public IBonusDefinition BonusDefinition { get; private set; }
+        public event Action<Collider> OnTriggerEnterAction;
+        
+        public BonusController BonusController { get; private set; }
 
-        public void Initialize(IBonusDefinition bonusDefinition)
+        public void Initialize(BonusController bonusController)
         {
-            BonusDefinition = bonusDefinition;
+            BonusController = bonusController;
+        }
+
+        public void OnTriggerEnter(Collider other)
+        {
+            OnTriggerEnterAction?.Invoke(other);
         }
     }
 }

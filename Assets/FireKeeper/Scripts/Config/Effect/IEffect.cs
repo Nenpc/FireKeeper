@@ -7,5 +7,6 @@
         string GetIconKey();
         float GetTime();
         bool IsInfinity();
+        bool IsGoodEffect();
     }
 }

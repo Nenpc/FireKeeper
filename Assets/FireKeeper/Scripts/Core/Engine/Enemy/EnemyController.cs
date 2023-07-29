@@ -5,7 +5,8 @@ using UnityEngine;
 
 public sealed class EnemyController : IDisposable
 {
-    private readonly IEffect _effectAbstract;
+    private readonly IEffect _effect;
+    private readonly IMovement _movement;
     private readonly IPlayerController _playerController;
     private readonly IEnemyDefinition _definition;
     private readonly ICoreTimeController _coreTimeController;
@@ -29,11 +30,13 @@ public sealed class EnemyController : IDisposable
         _coreTimeController = coreTimeController;
         _enemyFactory = enemyFactory;
         _view = view;
-
-        _coreTimeController.TickAction += Tick;
-        _effectAbstract = _definition.EffectAbstract.GetEffect();
+        
+        _effect = _definition.EffectDefinition.GetEffect();
+        _movement = _definition.MovementDefinition.GetMovement();
         _chaseRangeSquared = _definition.ChaseRange * _definition.ChaseRange;
         _attackRangeSquared = _definition.AttackRange * _definition.AttackRange;
+        
+        _coreTimeController.TickAction += Tick;
     }
     
     public void Dispose()
@@ -47,21 +50,15 @@ public sealed class EnemyController : IDisposable
         float sqrLen = offset.sqrMagnitude;
         
         if (sqrLen <= _chaseRangeSquared)
-            Move();
+            _movement.Move(_view.transform,_playerController.Position);
         
         if (sqrLen <= _attackRangeSquared)
             ApplyEffect();
     }
 
-    private void Move()
-    {
-        var step = _definition.Speed * Time.deltaTime;
-        _view.transform.position = Vector3.MoveTowards(_view.transform.position, _playerController.Position, step);
-    }
-
     private void ApplyEffect()
     {
-        _playerController.ApplyEffect(_effectAbstract);
+        _playerController.ApplyEffect(_effect);
         _enemyFactory.DestroyEnemy(this);
     }
 }

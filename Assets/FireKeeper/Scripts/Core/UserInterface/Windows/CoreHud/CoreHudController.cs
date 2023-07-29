@@ -9,7 +9,7 @@ namespace FireKeeper.Core.UserInterface
     public sealed class CoreHudController : WindowController<CoreHudView>
     {
         private readonly IPlayerController _playerController;
-        private readonly IWinController _winController;
+        private readonly IProgressController _progressController;
         private readonly ITextureProvider _textureProvider;
         private readonly Dictionary<EffectTimer, CoreHudEffectElement> _effectElements;
         
@@ -19,18 +19,18 @@ namespace FireKeeper.Core.UserInterface
         public CoreHudController(IWindowFacade windowFacade,
             IPlayerController playerController,
             ITextureProvider textureProvider,
-            IWinController winController) : base(windowFacade)
+            IProgressController progressController) : base(windowFacade)
         {
             _playerController = playerController;
             _textureProvider = textureProvider;
-            _winController = winController;
+            _progressController = progressController;
             _effectElements = new Dictionary<EffectTimer, CoreHudEffectElement>();
 
         }
 
         protected override void OnInstanceWindowSubscribe(CoreHudView window)
         {
-            _winController.ProgressAction += WinProgress;
+            _progressController.ProgressAction += ProgressProgress;
             _playerController.AddEffectAction += AddEffect;
             _playerController.TimeUpdateEffectAction += TimeEffectUpdate;
             _playerController.RemoveEffectAction += EffectRemove;
@@ -39,7 +39,7 @@ namespace FireKeeper.Core.UserInterface
         
         protected override void OnReleaseWindowSubscribe(CoreHudView window)
         {
-            _winController.ProgressAction -= WinProgress;
+            _progressController.ProgressAction -= ProgressProgress;
             _playerController.AddEffectAction -= AddEffect;
             _playerController.TimeUpdateEffectAction -= TimeEffectUpdate;
             _playerController.RemoveEffectAction -= EffectRemove;
@@ -52,6 +52,9 @@ namespace FireKeeper.Core.UserInterface
         
         private async UniTask AddEffectAsync(EffectTimer effectTimer)
         {
+            if (!effectTimer.GetEffect().IsInfinity() && effectTimer.GetMaxLeftTime() == 0)
+                return;
+
             var effectElement = await _viewPool.Get(Window.GetEffectAsset(), Vector3.zero);
 
             if (effectElement == null)
@@ -61,7 +64,7 @@ namespace FireKeeper.Core.UserInterface
             }
 
             await _textureProvider.SetIcon(effectElement.Image, effectTimer.GetEffect().GetIconKey());
-            effectElement.SetProgress(0);
+            effectElement.Initialize(effectTimer.GetEffect().IsGoodEffect());
                 
             _effectElements.Add(effectTimer, effectElement);
         }
@@ -86,9 +89,9 @@ namespace FireKeeper.Core.UserInterface
             _viewPool.Return(effectElement);
         }
 
-        private void WinProgress(float curTime)
+        private void ProgressProgress(float curTime)
         {
-            var winTime = _winController.GetWinTime();
+            var winTime = _progressController.GetWinTime();
             Window.SetProgressInfo(curTime, winTime);
         }
     }

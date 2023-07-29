@@ -3,7 +3,6 @@
     "rootNamespace": "",
     "references": [
         "Zenject",
-        "Unity.TextMeshPro",
         "UniTask",
         "UniTask.Linq",
         "UniTask.DOTween",

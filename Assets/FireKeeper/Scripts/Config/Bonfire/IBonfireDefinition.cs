@@ -4,7 +4,8 @@ namespace FireKeeper.Config
 {
     public interface IBonfireDefinition
     {
-        int Life { get; }
+        int MaxLife { get; }
+        float FadingPerSecond { get; }
         AssetReferenceGameObject BonfirePrefab { get; }
     }
 }
