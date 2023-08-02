@@ -30,18 +30,22 @@ namespace FireKeeper.Core.Engine
         public void Initialize(IBonfireController bonfireDefinition)
         {
             _bonfireController = bonfireDefinition;
+
+            var sparkMain = spark.main;
+            _startSparkStartSize = sparkMain.startSizeMultiplier;
+            _startSparkStartSpeed = sparkMain.startSpeedMultiplier;
+        
+            var smokeMain = smoke.main;
+            _startSmokeStartSize = smokeMain.startSizeMultiplier;        
+            _startSmokeStartSpeed = smokeMain.startSpeedMultiplier;
             
-            _startSparkStartSize = spark.startSize;
-            _startSparkStartSpeed = spark.startSpeed;
+            var fireMain = fire.main;
+            _startFireStartSize = fireMain.startSizeMultiplier;        
+            _startFireStartSpeed = fireMain.startSpeedMultiplier;
             
-            _startSmokeStartSize = smoke.startSize;        
-            _startSmokeStartSpeed = smoke.startSpeed;
-            
-            _startFireStartSize = fire.startSize;        
-            _startFireStartSpeed = fire.startSpeed;
-            
-            _startFireSecondStartSize = fireSecond.startSize;        
-            _startFireSecondStartSpeed = fireSecond.startSpeed;
+            var fireSecondMain = fireSecond.main;
+            _startFireSecondStartSize = fireSecondMain.startSizeMultiplier;        
+            _startFireSecondStartSpeed = fireSecondMain.startSpeedMultiplier;
             
             _startLightRange = light.range;        
             _startLightIntensity = light.intensity;
@@ -60,17 +64,22 @@ namespace FireKeeper.Core.Engine
 
         public void BonfirePower(float value)
         {
-            spark.startSize = _startSparkStartSize * value;
-            spark.startSpeed = _startSparkStartSpeed * value;
+            var sparkMain = spark.main;
+            sparkMain.startSizeMultiplier = _startSparkStartSize * value;
+            sparkMain.startSpeedMultiplier = _startSparkStartSpeed * value;
 
-            smoke.startSize = _startSmokeStartSize * value;
-            smoke.startSpeed = _startSmokeStartSpeed * value;
+            var smokeMain = smoke.main;
+            smokeMain.startSizeMultiplier = _startSmokeStartSize * value;
+            smokeMain.startSpeedMultiplier = _startSmokeStartSpeed * value;
 
-            fire.startSize = _startFireStartSize * value;
-            fire.startSpeed = _startFireStartSpeed * value;
-			
-            fireSecond.startSize = _startFireSecondStartSize * value;
-            fireSecond.startSpeed = _startFireSecondStartSpeed * value;
+            
+            var fireMain = fire.main;
+            fireMain.startSizeMultiplier = _startFireStartSize * value;
+            fireMain.startSpeedMultiplier = _startFireStartSpeed * value;
+	
+            var fireSecondMain = fireSecond.main;
+            fireSecondMain.startSizeMultiplier = _startFireSecondStartSize * value;
+            fireSecondMain.startSpeedMultiplier = _startFireSecondStartSpeed * value;
 
             light.range = _startLightRange * value;
             light.intensity = _startLightIntensity * value;
