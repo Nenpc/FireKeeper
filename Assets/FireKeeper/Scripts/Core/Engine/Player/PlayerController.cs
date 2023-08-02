@@ -106,6 +106,8 @@ namespace FireKeeper.Core.Engine
             {
                 _view.Animator.SetBool("Run", false);
             }
+            
+            _view.View.transform.LookAt(_view.Position + direction);
         }
 
         private void Interact()
