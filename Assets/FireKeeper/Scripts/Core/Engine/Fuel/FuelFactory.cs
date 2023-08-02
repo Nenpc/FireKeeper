@@ -51,7 +51,12 @@ namespace FireKeeper.Core.Engine
         {
             var pool = GetPool(fuelDefinition.Id);
             var fuelView = await pool.Get(fuelDefinition.FuelPrefab, position);
-            
+
+            if (!fuelView.TryGetComponent<InteractionMono>(out var interactionMono))
+                interactionMono = fuelView.gameObject.AddComponent<InteractionMono>();
+
+            interactionMono.Initialize(new InteractionInfo(fuelDefinition, typeof(TakeFuelState), () => Destroy(fuelView)));
+
             fuelView.Initialize(fuelDefinition);
             
             OnCreate?.Invoke(fuelView);

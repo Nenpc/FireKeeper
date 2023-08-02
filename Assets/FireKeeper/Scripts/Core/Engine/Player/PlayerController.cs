@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FireKeeper.Config;
 using UnityEngine;
 
@@ -6,15 +7,20 @@ namespace FireKeeper.Core.Engine
 {
     public sealed class PlayerController : IPlayerController, IDisposable
     {
+        public event Action<Collider> FindedObjectAction;
+        public event Action<Collider> LosedObjectAction;
+        
         public event Action<EffectTimer> AddEffectAction;
         public event Action<EffectTimer> TimeUpdateEffectAction;
         public event Action<EffectTimer> RemoveEffectAction;
         
         public Vector3 Position => _view.Position;
+        public Transform FuelPosition => _view.FuelPosition;
 
         private readonly PlayerParameters _playerParameters;
         private readonly ICoreTimeController _coreTimeController;
         private readonly PlayerEffectController _playerEffectController;
+        private readonly IPlayerInteractionController _playerInteractionController;
 
         private PlayerView _view;
 
@@ -26,6 +32,7 @@ namespace FireKeeper.Core.Engine
             _playerParameters = new PlayerParameters(playerConfig.GetDefinition());
             _coreTimeController = coreTimeController;
             _playerEffectController = new PlayerEffectController(_coreTimeController, this);
+            _playerInteractionController = new PlayerInteractionController(this);
 
             _coreTimeController.TickAction += Tick;
             _playerEffectController.AddEffectAction += Add;
@@ -39,6 +46,13 @@ namespace FireKeeper.Core.Engine
 
         public void Dispose()
         {
+            if (_view != null)
+            {
+                _view.InteractionCollider.FindedObjectAction -= FindObject;
+                _view.InteractionCollider.LosedObjectAction -= LosedObject;
+                _view = null;
+            }
+            
             _coreTimeController.TickAction -= Tick;
             _playerEffectController.AddEffectAction -= Add;
             _playerEffectController.TimeUpdateEffectAction -= TimeUpdate;
@@ -47,8 +61,19 @@ namespace FireKeeper.Core.Engine
 
         public void UpdateView(PlayerView view)
         {
+            if (_view != null)
+            {
+                _view.InteractionCollider.FindedObjectAction -= FindObject;
+                _view.InteractionCollider.LosedObjectAction -= LosedObject;
+            }
+
             _view = view;
+            _view.InteractionCollider.FindedObjectAction += FindObject;
+            _view.InteractionCollider.LosedObjectAction += LosedObject;
         }
+
+        private void FindObject(Collider collider) => FindedObjectAction?.Invoke(collider);
+        private void LosedObject(Collider collider) => LosedObjectAction?.Invoke(collider);
 
         public void ApplyEffect(IEffect effect)
         {
@@ -60,6 +85,7 @@ namespace FireKeeper.Core.Engine
             if (_view == null) Debug.LogError("No player view!");
 
             Move(deltaTime);
+            Interact();
         }
 
         private void Move(float deltaTime)
@@ -79,6 +105,14 @@ namespace FireKeeper.Core.Engine
             else
             {
                 _view.Animator.SetBool("Run", false);
+            }
+        }
+
+        private void Interact()
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                _playerInteractionController.Interact();
             }
         }
     }

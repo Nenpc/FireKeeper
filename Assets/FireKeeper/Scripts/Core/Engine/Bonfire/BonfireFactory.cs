@@ -35,6 +35,11 @@ namespace FireKeeper.Core.Engine
         {
             var bonfireGo = await bonfireDefinition.BonfirePrefab.InstantiateAsync(position, Quaternion.identity);
             var bonfireView = bonfireGo.GetComponent<BonfireView>();
+            
+            if (!bonfireView.TryGetComponent<InteractionMono>(out var interactionMono))
+                interactionMono = bonfireView.gameObject.AddComponent<InteractionMono>();
+            
+            interactionMono.Initialize(new InteractionInfo(_bonfireController, typeof(BurnFuelState)));
 
             _bonfireController.UpdateView(bonfireView);
             bonfireView.Initialize(_bonfireController);

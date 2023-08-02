@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BonfireConfig
   m_EditorClassIdentifier: 
   _definition:
-    _maxLife: 10
+    _maxLife: 100
     _fadingPerSecond: 1
     _bonefirePrefab:
       m_AssetGUID: a0dfea2b90761d741a1976b8199eddae
